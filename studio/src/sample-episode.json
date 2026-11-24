@@ -1,0 +1,837 @@
+{
+  "date": "2026-11-24",
+  "showName": "Bits & Bulls",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "durationInFrames": 4006,
+  "audioFile": null,
+  "market": {
+    "asOf": "2026-11-24",
+    "indices": [
+      {
+        "symbol": "^GSPC",
+        "name": "S&P 500",
+        "price": 6639.46,
+        "change": 61.72,
+        "changePct": 0.94,
+        "series": [
+          {
+            "date": "2026-10-26",
+            "close": 6110.64
+          },
+          {
+            "date": "2026-10-27",
+            "close": 6197.48
+          },
+          {
+            "date": "2026-10-28",
+            "close": 6272.88
+          },
+          {
+            "date": "2026-10-29",
+            "close": 6302.99
+          },
+          {
+            "date": "2026-10-30",
+            "close": 6392.36
+          },
+          {
+            "date": "2026-11-02",
+            "close": 6379.2
+          },
+          {
+            "date": "2026-11-03",
+            "close": 6492.7
+          },
+          {
+            "date": "2026-11-04",
+            "close": 6601.86
+          },
+          {
+            "date": "2026-11-05",
+            "close": 6504.67
+          },
+          {
+            "date": "2026-11-06",
+            "close": 6518.08
+          },
+          {
+            "date": "2026-11-09",
+            "close": 6496.82
+          },
+          {
+            "date": "2026-11-10",
+            "close": 6523.16
+          },
+          {
+            "date": "2026-11-11",
+            "close": 6502.05
+          },
+          {
+            "date": "2026-11-12",
+            "close": 6543.09
+          },
+          {
+            "date": "2026-11-13",
+            "close": 6614.67
+          },
+          {
+            "date": "2026-11-16",
+            "close": 6653.06
+          },
+          {
+            "date": "2026-11-17",
+            "close": 6657.8
+          },
+          {
+            "date": "2026-11-18",
+            "close": 6655.74
+          },
+          {
+            "date": "2026-11-19",
+            "close": 6610.28
+          },
+          {
+            "date": "2026-11-20",
+            "close": 6624.08
+          },
+          {
+            "date": "2026-11-23",
+            "close": 6577.74
+          },
+          {
+            "date": "2026-11-24",
+            "close": 6639.46
+          }
+        ]
+      },
+      {
+        "symbol": "^IXIC",
+        "name": "Nasdaq",
+        "price": 20046.33,
+        "change": -300.03,
+        "changePct": -1.47,
+        "series": [
+          {
+            "date": "2026-10-26",
+            "close": 19594.31
+          },
+          {
+            "date": "2026-10-27",
+            "close": 19652.13
+          },
+          {
+            "date": "2026-10-28",
+            "close": 19457.68
+          },
+          {
+            "date": "2026-10-29",
+            "close": 19401.32
+          },
+          {
+            "date": "2026-10-30",
+            "close": 19643.64
+          },
+          {
+            "date": "2026-11-02",
+            "close": 19443.26
+          },
+          {
+            "date": "2026-11-03",
+            "close": 19729.12
+          },
+          {
+            "date": "2026-11-04",
+            "close": 20053.5
+          },
+          {
+            "date": "2026-11-05",
+            "close": 20250.94
+          },
+          {
+            "date": "2026-11-06",
+            "close": 20016.54
+          },
+          {
+            "date": "2026-11-09",
+            "close": 19986.56
+          },
+          {
+            "date": "2026-11-10",
+            "close": 20049.61
+          },
+          {
+            "date": "2026-11-11",
+            "close": 20177.86
+          },
+          {
+            "date": "2026-11-12",
+            "close": 20287.22
+          },
+          {
+            "date": "2026-11-13",
+            "close": 20334.89
+          },
+          {
+            "date": "2026-11-16",
+            "close": 20368.84
+          },
+          {
+            "date": "2026-11-17",
+            "close": 20134.77
+          },
+          {
+            "date": "2026-11-18",
+            "close": 19916.07
+          },
+          {
+            "date": "2026-11-19",
+            "close": 20024.46
+          },
+          {
+            "date": "2026-11-20",
+            "close": 20190.0
+          },
+          {
+            "date": "2026-11-23",
+            "close": 20346.36
+          },
+          {
+            "date": "2026-11-24",
+            "close": 20046.33
+          }
+        ]
+      },
+      {
+        "symbol": "^DJI",
+        "name": "Dow Jones",
+        "price": 42606.11,
+        "change": 195.05,
+        "changePct": 0.46,
+        "series": [
+          {
+            "date": "2026-10-26",
+            "close": 43976.75
+          },
+          {
+            "date": "2026-10-27",
+            "close": 44027.42
+          },
+          {
+            "date": "2026-10-28",
+            "close": 43746.67
+          },
+          {
+            "date": "2026-10-29",
+            "close": 44089.19
+          },
+          {
+            "date": "2026-10-30",
+            "close": 43880.54
+          },
+          {
+            "date": "2026-11-02",
+            "close": 44363.62
+          },
+          {
+            "date": "2026-11-03",
+            "close": 44006.11
+          },
+          {
+            "date": "2026-11-04",
+            "close": 43805.71
+          },
+          {
+            "date": "2026-11-05",
+            "close": 43565.61
+          },
+          {
+            "date": "2026-11-06",
+            "close": 43212.33
+          },
+          {
+            "date": "2026-11-09",
+            "close": 43301.45
+          },
+          {
+            "date": "2026-11-10",
+            "close": 43327.14
+          },
+          {
+            "date": "2026-11-11",
+            "close": 43517.27
+          },
+          {
+            "date": "2026-11-12",
+            "close": 43509.75
+          },
+          {
+            "date": "2026-11-13",
+            "close": 43436.46
+          },
+          {
+            "date": "2026-11-16",
+            "close": 43158.99
+          },
+          {
+            "date": "2026-11-17",
+            "close": 42380.26
+          },
+          {
+            "date": "2026-11-18",
+            "close": 41655.18
+          },
+          {
+            "date": "2026-11-19",
+            "close": 42493.18
+          },
+          {
+            "date": "2026-11-20",
+            "close": 42694.1
+          },
+          {
+            "date": "2026-11-23",
+            "close": 42411.06
+          },
+          {
+            "date": "2026-11-24",
+            "close": 42606.11
+          }
+        ]
+      }
+    ],
+    "gainers": [
+      {
+        "symbol": "GOOGL",
+        "name": "Alphabet",
+        "price": 209.1,
+        "change": 6.75,
+        "changePct": 3.34,
+        "series": []
+      },
+      {
+        "symbol": "TSLA",
+        "name": "Tesla",
+        "price": 333.57,
+        "change": 8.74,
+        "changePct": 2.69,
+        "series": []
+      },
+      {
+        "symbol": "NVDA",
+        "name": "Nvidia",
+        "price": 154.5,
+        "change": 3.46,
+        "changePct": 2.29,
+        "series": []
+      }
+    ],
+    "losers": [
+      {
+        "symbol": "AAPL",
+        "name": "Apple",
+        "price": 264.92,
+        "change": -18.02,
+        "changePct": -6.37,
+        "series": []
+      },
+      {
+        "symbol": "AMD",
+        "name": "AMD",
+        "price": 146.85,
+        "change": -0.99,
+        "changePct": -0.67,
+        "series": []
+      },
+      {
+        "symbol": "ORCL",
+        "name": "Oracle",
+        "price": 242.2,
+        "change": -0.15,
+        "changePct": -0.06,
+        "series": []
+      }
+    ],
+    "sampleData": true
+  },
+  "ticker": [
+    {
+      "symbol": "^GSPC",
+      "name": "S&P 500",
+      "price": 6639.46,
+      "change": 61.72,
+      "changePct": 0.94,
+      "series": []
+    },
+    {
+      "symbol": "^IXIC",
+      "name": "Nasdaq",
+      "price": 20046.33,
+      "change": -300.03,
+      "changePct": -1.47,
+      "series": []
+    },
+    {
+      "symbol": "^DJI",
+      "name": "Dow Jones",
+      "price": 42606.11,
+      "change": 195.05,
+      "changePct": 0.46,
+      "series": []
+    },
+    {
+      "symbol": "NVDA",
+      "name": "Nvidia",
+      "price": 154.5,
+      "change": 3.46,
+      "changePct": 2.29,
+      "series": []
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft",
+      "price": 482.25,
+      "change": 3.48,
+      "changePct": 0.73,
+      "series": []
+    },
+    {
+      "symbol": "AAPL",
+      "name": "Apple",
+      "price": 264.92,
+      "change": -18.02,
+      "changePct": -6.37,
+      "series": []
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet",
+      "price": 209.1,
+      "change": 6.75,
+      "changePct": 3.34,
+      "series": []
+    },
+    {
+      "symbol": "AMZN",
+      "name": "Amazon",
+      "price": 253.61,
+      "change": 0.68,
+      "changePct": 0.27,
+      "series": []
+    },
+    {
+      "symbol": "META",
+      "name": "Meta",
+      "price": 579.44,
+      "change": 1.58,
+      "changePct": 0.27,
+      "series": []
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla",
+      "price": 333.57,
+      "change": 8.74,
+      "changePct": 2.69,
+      "series": []
+    },
+    {
+      "symbol": "AMD",
+      "name": "AMD",
+      "price": 146.85,
+      "change": -0.99,
+      "changePct": -0.67,
+      "series": []
+    },
+    {
+      "symbol": "AVGO",
+      "name": "Broadcom",
+      "price": 294.91,
+      "change": 1.85,
+      "changePct": 0.63,
+      "series": []
+    },
+    {
+      "symbol": "TSM",
+      "name": "TSMC",
+      "price": 205.04,
+      "change": 1.81,
+      "changePct": 0.89,
+      "series": []
+    },
+    {
+      "symbol": "ORCL",
+      "name": "Oracle",
+      "price": 242.2,
+      "change": -0.15,
+      "changePct": -0.06,
+      "series": []
+    },
+    {
+      "symbol": "PLTR",
+      "name": "Palantir",
+      "price": 143.57,
+      "change": 0.78,
+      "changePct": 0.55,
+      "series": []
+    }
+  ],
+  "scenes": [
+    {
+      "type": "intro",
+      "startFrame": 0,
+      "durationInFrames": 416,
+      "narration": "Maya: Hello and welcome to Bits & Bulls for Tuesday, November 24. I'm Maya. Leo: And I'm Leo. Today: S&P 500 up 0.9%, and Open-weight model tops coding benchmark, rivaling close.",
+      "headline": "Bits & Bulls",
+      "bullets": [],
+      "source": "",
+      "category": null,
+      "followUp": false,
+      "index": 0,
+      "total": 0,
+      "alert": "",
+      "alertFrames": 0
+    },
+    {
+      "type": "market",
+      "startFrame": 416,
+      "durationInFrames": 646,
+      "narration": "Maya: Let's start with the markets. Leo? Leo: It was a strong day on Wall Street. S&P 500 rose 0.9 percent, Nasdaq fell 1.5 percent, Dow Jones rose 0.5 percent. Leo: In tech, Alphabet rose 3.3 percent and Tesla rose 2.7 percent. On the downside, Apple fell 6.4 percent.",
+      "headline": "S&P 500 up 0.9%",
+      "bullets": [
+        "S&P 500 +0.9%",
+        "Nasdaq -1.5%",
+        "Dow Jones +0.5%"
+      ],
+      "source": "",
+      "category": null,
+      "followUp": false,
+      "index": 0,
+      "total": 0,
+      "alert": "Market watch",
+      "alertFrames": 52
+    },
+    {
+      "type": "news",
+      "startFrame": 1062,
+      "durationInFrames": 519,
+      "narration": "Maya: Sample Wire reports: Open-weight model tops coding benchmark, rivaling closed systems. A new open-weight language model matched leading proprietary systems on a widely used coding benchmark, while running on a single high-end GPU. Leo: That's one to watch.",
+      "headline": "Open-weight model tops coding benchmark, rivaling close",
+      "bullets": [
+        "A new open-weight language model matched leading proprietary systems o",
+        "Source: Sample Wire",
+        "AI news"
+      ],
+      "source": "Sample Wire",
+      "category": "AI",
+      "followUp": false,
+      "index": 1,
+      "total": 5,
+      "alert": "AI alert",
+      "alertFrames": 52
+    },
+    {
+      "type": "news",
+      "startFrame": 1581,
+      "durationInFrames": 484,
+      "narration": "Leo: Sample Tech Daily reports: Chipmaker unveils inference accelerator aimed at data centers. The accelerator promises lower cost per token for serving large models and ships to cloud providers next quarter. Maya: That's one to watch.",
+      "headline": "Chipmaker unveils inference accelerator aimed at data c",
+      "bullets": [
+        "The accelerator promises lower cost per token for serving large models",
+        "Source: Sample Tech Daily",
+        "AI news"
+      ],
+      "source": "Sample Tech Daily",
+      "category": "AI",
+      "followUp": false,
+      "index": 2,
+      "total": 5,
+      "alert": "AI alert",
+      "alertFrames": 52
+    },
+    {
+      "type": "news",
+      "startFrame": 2065,
+      "durationInFrames": 460,
+      "narration": "Maya: Sample Policy Review reports: Regulators propose new rules for app store payments. The draft rules would let developers steer customers to outside payment options and cap commission fees. Leo: That's one to watch.",
+      "headline": "Regulators propose new rules for app store payments",
+      "bullets": [
+        "The draft rules would let developers steer customers to outside paymen",
+        "Source: Sample Policy Review",
+        "Tech news"
+      ],
+      "source": "Sample Policy Review",
+      "category": "Tech",
+      "followUp": false,
+      "index": 3,
+      "total": 5,
+      "alert": "Tech alert",
+      "alertFrames": 52
+    },
+    {
+      "type": "news",
+      "startFrame": 2525,
+      "durationInFrames": 519,
+      "narration": "Leo: Sample Health Tech reports: Hospital network pilots AI assistant for clinical notes. Doctors in the pilot spent less time on paperwork, though the network says every note is still reviewed by a clinician. Maya: That's one to watch.",
+      "headline": "Hospital network pilots AI assistant for clinical notes",
+      "bullets": [
+        "Doctors in the pilot spent less time on paperwork, though the network",
+        "Source: Sample Health Tech",
+        "AI news"
+      ],
+      "source": "Sample Health Tech",
+      "category": "AI",
+      "followUp": false,
+      "index": 4,
+      "total": 5,
+      "alert": "AI alert",
+      "alertFrames": 52
+    },
+    {
+      "type": "news",
+      "startFrame": 3044,
+      "durationInFrames": 449,
+      "narration": "Maya: Sample Science Desk reports: Quantum computing startup reports error-correction milestone. Researchers kept a logical qubit stable longer than its physical qubits, a key step toward practical machines. Leo: That's one to watch.",
+      "headline": "Quantum computing startup reports error-correction mile",
+      "bullets": [
+        "Researchers kept a logical qubit stable longer than its physical qubit",
+        "Source: Sample Science Desk",
+        "Tech news"
+      ],
+      "source": "Sample Science Desk",
+      "category": "Tech",
+      "followUp": false,
+      "index": 5,
+      "total": 5,
+      "alert": "Tech alert",
+      "alertFrames": 52
+    },
+    {
+      "type": "outro",
+      "startFrame": 3493,
+      "durationInFrames": 513,
+      "narration": "Maya: That's Bits & Bulls for today. Leo: Subscribe so you don't miss tomorrow's update. See you then! Leo: This show is for information and entertainment only and is not financial advice. Do your own research before investing.",
+      "headline": "",
+      "bullets": [],
+      "source": "",
+      "category": null,
+      "followUp": false,
+      "index": 0,
+      "total": 0,
+      "alert": "",
+      "alertFrames": 0
+    }
+  ],
+  "captions": [
+    {
+      "text": "Hello and welcome to Bits & Bulls for Tuesday, November 24.",
+      "speaker": "a",
+      "startFrame": 36,
+      "endFrame": 163
+    },
+    {
+      "text": "I'm Maya.",
+      "speaker": "a",
+      "startFrame": 169,
+      "endFrame": 192
+    },
+    {
+      "text": "And I'm Leo.",
+      "speaker": "b",
+      "startFrame": 202,
+      "endFrame": 237
+    },
+    {
+      "text": "Today: S&P 500 up 0.9%, and Open-weight model tops coding benchmark, rivaling close.",
+      "speaker": "b",
+      "startFrame": 243,
+      "endFrame": 393
+    },
+    {
+      "text": "Let's start with the markets.",
+      "speaker": "a",
+      "startFrame": 468,
+      "endFrame": 526
+    },
+    {
+      "text": "Leo?",
+      "speaker": "a",
+      "startFrame": 532,
+      "endFrame": 550
+    },
+    {
+      "text": "It was a strong day on Wall Street.",
+      "speaker": "b",
+      "startFrame": 560,
+      "endFrame": 653
+    },
+    {
+      "text": "S&P 500 rose 0.9 percent, Nasdaq fell 1.5 percent, Dow Jones rose 0.5 percent.",
+      "speaker": "b",
+      "startFrame": 659,
+      "endFrame": 820
+    },
+    {
+      "text": "In tech, Alphabet rose 3.3 percent and Tesla rose 2.7 percent.",
+      "speaker": "b",
+      "startFrame": 826,
+      "endFrame": 953
+    },
+    {
+      "text": "On the downside, Apple fell 6.4 percent.",
+      "speaker": "b",
+      "startFrame": 959,
+      "endFrame": 1040
+    },
+    {
+      "text": "Sample Wire reports: Open-weight model tops coding benchmark, rivaling closed systems.",
+      "speaker": "a",
+      "startFrame": 1115,
+      "endFrame": 1242
+    },
+    {
+      "text": "A new open-weight language model matched leading proprietary systems on a widely used coding benchmark, while running on a single high-end GPU.",
+      "speaker": "a",
+      "startFrame": 1248,
+      "endFrame": 1502
+    },
+    {
+      "text": "That's one to watch.",
+      "speaker": "b",
+      "startFrame": 1512,
+      "endFrame": 1558
+    },
+    {
+      "text": "Sample Tech Daily reports: Chipmaker unveils inference accelerator aimed at data centers.",
+      "speaker": "b",
+      "startFrame": 1633,
+      "endFrame": 1772
+    },
+    {
+      "text": "The accelerator promises lower cost per token for serving large models and ships to cloud providers next quarter.",
+      "speaker": "b",
+      "startFrame": 1778,
+      "endFrame": 1985
+    },
+    {
+      "text": "That's one to watch.",
+      "speaker": "a",
+      "startFrame": 1996,
+      "endFrame": 2042
+    },
+    {
+      "text": "Sample Policy Review reports: Regulators propose new rules for app store payments.",
+      "speaker": "a",
+      "startFrame": 2117,
+      "endFrame": 2256
+    },
+    {
+      "text": "The draft rules would let developers steer customers to outside payment options and cap commission fees.",
+      "speaker": "a",
+      "startFrame": 2262,
+      "endFrame": 2446
+    },
+    {
+      "text": "That's one to watch.",
+      "speaker": "b",
+      "startFrame": 2457,
+      "endFrame": 2503
+    },
+    {
+      "text": "Sample Health Tech reports: Hospital network pilots AI assistant for clinical notes.",
+      "speaker": "b",
+      "startFrame": 2578,
+      "endFrame": 2716
+    },
+    {
+      "text": "Doctors in the pilot spent less time on paperwork, though the network says every note is still reviewed by a clinician.",
+      "speaker": "b",
+      "startFrame": 2722,
+      "endFrame": 2965
+    },
+    {
+      "text": "That's one to watch.",
+      "speaker": "a",
+      "startFrame": 2975,
+      "endFrame": 3021
+    },
+    {
+      "text": "Sample Science Desk reports: Quantum computing startup reports error-correction milestone.",
+      "speaker": "a",
+      "startFrame": 3096,
+      "endFrame": 3212
+    },
+    {
+      "text": "Researchers kept a logical qubit stable longer than its physical qubits, a key step toward practical machines.",
+      "speaker": "a",
+      "startFrame": 3218,
+      "endFrame": 3414
+    },
+    {
+      "text": "That's one to watch.",
+      "speaker": "b",
+      "startFrame": 3424,
+      "endFrame": 3470
+    },
+    {
+      "text": "That's Bits & Bulls for today.",
+      "speaker": "a",
+      "startFrame": 3493,
+      "endFrame": 3562
+    },
+    {
+      "text": "Subscribe so you don't miss tomorrow's update.",
+      "speaker": "b",
+      "startFrame": 3573,
+      "endFrame": 3653
+    },
+    {
+      "text": "See you then!",
+      "speaker": "b",
+      "startFrame": 3659,
+      "endFrame": 3694
+    },
+    {
+      "text": "This show is for information and entertainment only and is not financial advice.",
+      "speaker": "b",
+      "startFrame": 3700,
+      "endFrame": 3850
+    },
+    {
+      "text": "Do your own research before investing.",
+      "speaker": "b",
+      "startFrame": 3856,
+      "endFrame": 3925
+    }
+  ],
+  "youtube": {
+    "title": "S&P 500 up 0.9% · Open-weight model tops coding benchmark, rivaling close | Bits & Bulls Nov 24",
+    "description": "Bits & Bulls: your daily three-minute briefing on the stock market and the biggest AI and tech stories, for Tuesday, November 24, 2026, with Maya and Leo.\n\nChapters\n0:00 Intro\n0:13 Markets: S&P 500 up 0.9%\n0:35 Open-weight model tops coding benchmark, rivaling close\n0:52 Chipmaker unveils inference accelerator aimed at data c\n1:08 Regulators propose new rules for app store payments\n1:24 Hospital network pilots AI assistant for clinical notes\n1:41 Quantum computing startup reports error-correction mile\n1:56 Wrap-up\n\nSources\n• Open-weight model tops coding benchmark, rivaling close (Sample Wire): https://example.com/sample/0\n• Chipmaker unveils inference accelerator aimed at data c (Sample Tech Daily): https://example.com/sample/1\n• Regulators propose new rules for app store payments (Sample Policy Review): https://example.com/sample/2\n• Hospital network pilots AI assistant for clinical notes (Sample Health Tech): https://example.com/sample/3\n• Quantum computing startup reports error-correction mile (Sample Science Desk): https://example.com/sample/4\n\nMarket data reflects the 2026-11-24 session close.\nThis show is for information and entertainment only and is not financial advice. Do your own research before investing.\nMaya and Leo are AI-generated characters. Script, voices and animation are produced with AI tools and automated fact checks.\n\n#AI #StockMarket #TechNews",
+    "tags": [
+      "AI news",
+      "stock market today",
+      "tech news",
+      "Nasdaq",
+      "S&P 500",
+      "artificial intelligence",
+      "daily market update",
+      "Bits & Bulls",
+      "Alphabet",
+      "Tesla",
+      "Apple"
+    ]
+  },
+  "disclaimer": "This show is for information and entertainment only and is not financial advice. Do your own research before investing.",
+  "anchors": [
+    {
+      "id": "a",
+      "name": "Maya"
+    },
+    {
+      "id": "b",
+      "name": "Leo"
+    }
+  ],
+  "mouths": {}
+}

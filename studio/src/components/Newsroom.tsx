@@ -272,7 +272,7 @@ const Presenters: React.FC<{ seed: string; part: "body" | "hands" }> = ({ seed, 
       {(["a", "b"] as const).map((id) => (
         <div key={id} style={{ position: "absolute", left: SEAT[id] - PRESENTER_SIZE / 2, top: PRESENTER_TOP }}>
           <Presenter id={id} mouth={voice[id]} look={look(id)} speaking={voice.speaker === id}
-                     size={PRESENTER_SIZE} seed={seed} part={part} />
+                     size={PRESENTER_SIZE} seed={seed} part={part} delivery={voice.delivery[id]} />
         </div>
       ))}
     </>

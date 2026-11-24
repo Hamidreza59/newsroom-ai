@@ -71,6 +71,7 @@ config change, not a rewrite.
 | ✅ **Grounded output** | Deterministic checks reject numbers that don't match the data and names that aren't in the source |
 | 🎙️ **Two-anchor dialogue** | Distinct voices, hand-offs and reactions, speaker-tagged captions |
 | 🎬 **Broadcast look** | Newsroom set, big TV on a stand, camera cuts, news-alert bumpers, ticker, lower thirds |
+| 🎭 **Expressive anchors** | Script-driven expressions, emphasis gestures, glances at notes, natural posture shifts |
 | 👔 **Daily wardrobe** | Each anchor gets a different seeded outfit every episode |
 | ⏱️ **Hard 3-minute cap** | The Producer measures real audio and drops the lowest-ranked story if needed |
 | 💸 **$0 to run** | Local LLM and TTS; deterministic fallbacks keep the run going if the model fails |
@@ -199,9 +200,12 @@ React), so there are no stock assets and nothing to license.
 - **Virtual camera:** shots are planned from caption timing: wide establishing shot, desk
   two-shot, speaker close-ups, "anchor beside the screen", and full-screen graphics for alerts and
   charts, each with a slow drift.
-- **Anchors:** original illustrated characters with blinking, breathing, nods, gaze toward the
-  speaker and loudness-driven lip-sync from per-anchor envelopes precomputed in Python, so renders
-  are deterministic.
+- **Anchors:** original illustrated characters with loudness-driven lip-sync from per-anchor
+  envelopes precomputed in Python, so renders are deterministic. Delivery is read from the script:
+  questions raise the brows and tilt the head, exclamations widen the smile, and emphasis words
+  (numbers, "record", "launch", "surge"…) trigger a hand gesture and a stronger nod. Listeners smile,
+  turn toward the speaker and glance down at their notes; both anchors blink, breathe and shift in
+  their chairs.
 - **Graphics:** animated index cards, a one-month chart, top movers, story cards, news-alert
   bumpers, a scrolling ticker and speaker-tagged lower thirds.
 - **Thumbnail:** a separate 1280×720 composition highlighting the day's biggest mover.
@@ -343,7 +347,7 @@ This project is built to make trustworthy content. Before monetizing a channel:
 
 ## Roadmap
 
-**v1 (this release):** local daily production with free components.
+**v1:** local daily production with free components, expressive two-anchor newsroom.
 
 **Next: cloud automation on AWS**
 
@@ -365,7 +369,6 @@ flowchart LR
 - [ ] Optional human-approval step, then upload through the YouTube Data API
 - [ ] Licensed market-data provider
 - [ ] Premium voice provider (ElevenLabs/OpenAI TTS) behind the existing `TtsEngine` interface
-- [ ] Richer character animation: expressions, gestures on emphasis, glances at notes
 - [ ] Optional photoreal presenters through an AI-avatar provider
 - [ ] Music bed and per-episode intro sequence
 

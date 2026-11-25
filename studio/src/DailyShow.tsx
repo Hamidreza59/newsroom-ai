@@ -11,15 +11,26 @@ import { MarketScene } from "./scenes/MarketScene";
 import { NewsScene } from "./scenes/NewsScene";
 import { OutroScene } from "./scenes/OutroScene";
 import { SceneDurationProvider } from "./scenes/SceneFrame";
+import { ColdOpenScene, ExplainerScene, QuizScene } from "./scenes/SegmentScenes";
 import { color } from "./theme";
 import type { Episode, Scene } from "./types";
 
-const sceneLabel = (s: Scene | undefined) =>
-  !s ? "" : s.type === "news" ? `STORY ${s.index}/${s.total}` : s.type === "market" ? "MARKETS" :
-    s.type === "intro" ? "TODAY" : "THAT'S A WRAP";
+const LABELS: Record<string, string> = {
+  coldopen: "TOP STORY", intro: "TODAY", market: "MARKETS", explainer: "AI IN 30 SECONDS",
+  quiz: "DAILY QUIZ", outro: "THAT'S A WRAP",
+};
+
+export const sceneLabel = (s: Scene | undefined) =>
+  !s ? "" : s.type === "news" ? `STORY ${s.index}/${s.total}` : LABELS[s.type] ?? "";
 
 const SceneView: React.FC<{ episode: Episode; scene: Scene }> = ({ episode, scene }) => {
   switch (scene.type) {
+    case "coldopen":
+      return <ColdOpenScene scene={scene} episode={episode} />;
+    case "explainer":
+      return <ExplainerScene scene={scene} />;
+    case "quiz":
+      return <QuizScene scene={scene} />;
     case "intro":
       return <IntroScene episode={episode} />;
     case "market":
@@ -31,7 +42,7 @@ const SceneView: React.FC<{ episode: Episode; scene: Scene }> = ({ episode, scen
   }
 };
 
-const TvContent: React.FC<{ episode: Episode }> = ({ episode }) => (
+export const TvContent: React.FC<{ episode: Episode }> = ({ episode }) => (
   <>
     {episode.scenes.map((scene, i) => (
       <Sequence key={i} from={scene.startFrame} durationInFrames={scene.durationInFrames} layout="none">

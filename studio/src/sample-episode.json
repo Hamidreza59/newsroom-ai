@@ -4,7 +4,7 @@
   "fps": 30,
   "width": 1920,
   "height": 1080,
-  "durationInFrames": 4006,
+  "durationInFrames": 5152,
   "audioFile": null,
   "market": {
     "asOf": "2026-11-24",
@@ -479,9 +479,26 @@
   ],
   "scenes": [
     {
-      "type": "intro",
+      "type": "coldopen",
       "startFrame": 0,
-      "durationInFrames": 416,
+      "durationInFrames": 248,
+      "narration": "Maya: Open-weight model tops coding benchmark, rivaling close. Leo: Plus, Apple slid 6.4 percent. Stay with us.",
+      "headline": "Open-weight model tops coding benchmark, rivaling close",
+      "bullets": [],
+      "source": "",
+      "category": "AI",
+      "followUp": false,
+      "index": 0,
+      "total": 0,
+      "alert": "",
+      "alertFrames": 0,
+      "options": [],
+      "reveal": ""
+    },
+    {
+      "type": "intro",
+      "startFrame": 248,
+      "durationInFrames": 380,
       "narration": "Maya: Hello and welcome to Bits & Bulls for Tuesday, November 24. I'm Maya. Leo: And I'm Leo. Today: S&P 500 up 0.9%, and Open-weight model tops coding benchmark, rivaling close.",
       "headline": "Bits & Bulls",
       "bullets": [],
@@ -491,11 +508,13 @@
       "index": 0,
       "total": 0,
       "alert": "",
-      "alertFrames": 0
+      "alertFrames": 0,
+      "options": [],
+      "reveal": ""
     },
     {
       "type": "market",
-      "startFrame": 416,
+      "startFrame": 628,
       "durationInFrames": 646,
       "narration": "Maya: Let's start with the markets. Leo? Leo: It was a strong day on Wall Street. S&P 500 rose 0.9 percent, Nasdaq fell 1.5 percent, Dow Jones rose 0.5 percent. Leo: In tech, Alphabet rose 3.3 percent and Tesla rose 2.7 percent. On the downside, Apple fell 6.4 percent.",
       "headline": "S&P 500 up 0.9%",
@@ -510,11 +529,13 @@
       "index": 0,
       "total": 0,
       "alert": "Market watch",
-      "alertFrames": 52
+      "alertFrames": 52,
+      "options": [],
+      "reveal": ""
     },
     {
       "type": "news",
-      "startFrame": 1062,
+      "startFrame": 1274,
       "durationInFrames": 519,
       "narration": "Maya: Sample Wire reports: Open-weight model tops coding benchmark, rivaling closed systems. A new open-weight language model matched leading proprietary systems on a widely used coding benchmark, while running on a single high-end GPU. Leo: That's one to watch.",
       "headline": "Open-weight model tops coding benchmark, rivaling close",
@@ -527,13 +548,15 @@
       "category": "AI",
       "followUp": false,
       "index": 1,
-      "total": 5,
+      "total": 4,
       "alert": "AI alert",
-      "alertFrames": 52
+      "alertFrames": 52,
+      "options": [],
+      "reveal": ""
     },
     {
       "type": "news",
-      "startFrame": 1581,
+      "startFrame": 1793,
       "durationInFrames": 484,
       "narration": "Leo: Sample Tech Daily reports: Chipmaker unveils inference accelerator aimed at data centers. The accelerator promises lower cost per token for serving large models and ships to cloud providers next quarter. Maya: That's one to watch.",
       "headline": "Chipmaker unveils inference accelerator aimed at data c",
@@ -546,14 +569,37 @@
       "category": "AI",
       "followUp": false,
       "index": 2,
-      "total": 5,
+      "total": 4,
       "alert": "AI alert",
-      "alertFrames": 52
+      "alertFrames": 52,
+      "options": [],
+      "reveal": ""
+    },
+    {
+      "type": "explainer",
+      "startFrame": 2277,
+      "durationInFrames": 915,
+      "narration": "Maya: Time for A.I. in 30 seconds. What are open-weight models? Leo: An open-weight model is an AI model whose trained parameters, its weights, are published so anyone\ncan download and run it on their own hardware. That lowers costs and lets companies keep data\nprivate, but it also means the original developer cannot control how the model is used. Maya: Closed\nmodels are only available through the company's own apps or services.",
+      "headline": "What are open-weight models?",
+      "bullets": [
+        "An open-weight model is an AI model whose trained…",
+        "That lowers costs and lets companies keep data\nprivate,…",
+        "Closed\nmodels are only available through the company's…"
+      ],
+      "source": "",
+      "category": null,
+      "followUp": false,
+      "index": 0,
+      "total": 0,
+      "alert": "AI in 30 seconds",
+      "alertFrames": 52,
+      "options": [],
+      "reveal": ""
     },
     {
       "type": "news",
-      "startFrame": 2065,
-      "durationInFrames": 460,
+      "startFrame": 3192,
+      "durationInFrames": 461,
       "narration": "Maya: Sample Policy Review reports: Regulators propose new rules for app store payments. The draft rules would let developers steer customers to outside payment options and cap commission fees. Leo: That's one to watch.",
       "headline": "Regulators propose new rules for app store payments",
       "bullets": [
@@ -565,14 +611,16 @@
       "category": "Tech",
       "followUp": false,
       "index": 3,
-      "total": 5,
+      "total": 4,
       "alert": "Tech alert",
-      "alertFrames": 52
+      "alertFrames": 52,
+      "options": [],
+      "reveal": ""
     },
     {
       "type": "news",
-      "startFrame": 2525,
-      "durationInFrames": 519,
+      "startFrame": 3653,
+      "durationInFrames": 518,
       "narration": "Leo: Sample Health Tech reports: Hospital network pilots AI assistant for clinical notes. Doctors in the pilot spent less time on paperwork, though the network says every note is still reviewed by a clinician. Maya: That's one to watch.",
       "headline": "Hospital network pilots AI assistant for clinical notes",
       "bullets": [
@@ -584,33 +632,37 @@
       "category": "AI",
       "followUp": false,
       "index": 4,
-      "total": 5,
+      "total": 4,
       "alert": "AI alert",
-      "alertFrames": 52
+      "alertFrames": 52,
+      "options": [],
+      "reveal": ""
     },
     {
-      "type": "news",
-      "startFrame": 3044,
-      "durationInFrames": 449,
-      "narration": "Maya: Sample Science Desk reports: Quantum computing startup reports error-correction milestone. Researchers kept a logical qubit stable longer than its physical qubits, a key step toward practical machines. Leo: That's one to watch.",
-      "headline": "Quantum computing startup reports error-correction mile",
-      "bullets": [
-        "Researchers kept a logical qubit stable longer than its physical qubit",
-        "Source: Sample Science Desk",
-        "Tech news"
-      ],
-      "source": "Sample Science Desk",
-      "category": "Tech",
+      "type": "quiz",
+      "startFrame": 4171,
+      "durationInFrames": 467,
+      "narration": "Leo: Quiz time! Which stock on our watchlist moved the most today? Maya: Is it A, Apple; B, AMD; C, Oracle? Tell us in the comments, and we'll reveal the answer on tomorrow's show.",
+      "headline": "Which stock on our watchlist moved the most today?",
+      "bullets": [],
+      "source": "",
+      "category": null,
       "followUp": false,
-      "index": 5,
-      "total": 5,
-      "alert": "Tech alert",
-      "alertFrames": 52
+      "index": 0,
+      "total": 0,
+      "alert": "Quiz time",
+      "alertFrames": 52,
+      "options": [
+        "Apple",
+        "AMD",
+        "Oracle"
+      ],
+      "reveal": ""
     },
     {
       "type": "outro",
-      "startFrame": 3493,
-      "durationInFrames": 513,
+      "startFrame": 4638,
+      "durationInFrames": 514,
       "narration": "Maya: That's Bits & Bulls for today. Leo: Subscribe so you don't miss tomorrow's update. See you then! Leo: This show is for information and entertainment only and is not financial advice. Do your own research before investing.",
       "headline": "",
       "bullets": [],
@@ -620,194 +672,250 @@
       "index": 0,
       "total": 0,
       "alert": "",
-      "alertFrames": 0
+      "alertFrames": 0,
+      "options": [],
+      "reveal": ""
     }
   ],
   "captions": [
     {
-      "text": "Hello and welcome to Bits & Bulls for Tuesday, November 24.",
+      "text": "Open-weight model tops coding benchmark, rivaling close.",
       "speaker": "a",
       "startFrame": 36,
-      "endFrame": 163
+      "endFrame": 117
+    },
+    {
+      "text": "Plus, Apple slid 6.4 percent.",
+      "speaker": "b",
+      "startFrame": 127,
+      "endFrame": 185
+    },
+    {
+      "text": "Stay with us.",
+      "speaker": "b",
+      "startFrame": 191,
+      "endFrame": 226
+    },
+    {
+      "text": "Hello and welcome to Bits & Bulls for Tuesday, November 24.",
+      "speaker": "a",
+      "startFrame": 248,
+      "endFrame": 375
     },
     {
       "text": "I'm Maya.",
       "speaker": "a",
-      "startFrame": 169,
-      "endFrame": 192
+      "startFrame": 381,
+      "endFrame": 404
     },
     {
       "text": "And I'm Leo.",
       "speaker": "b",
-      "startFrame": 202,
-      "endFrame": 237
+      "startFrame": 415,
+      "endFrame": 449
     },
     {
       "text": "Today: S&P 500 up 0.9%, and Open-weight model tops coding benchmark, rivaling close.",
       "speaker": "b",
-      "startFrame": 243,
-      "endFrame": 393
+      "startFrame": 455,
+      "endFrame": 605
     },
     {
       "text": "Let's start with the markets.",
       "speaker": "a",
-      "startFrame": 468,
-      "endFrame": 526
+      "startFrame": 680,
+      "endFrame": 738
     },
     {
       "text": "Leo?",
       "speaker": "a",
-      "startFrame": 532,
-      "endFrame": 550
+      "startFrame": 744,
+      "endFrame": 762
     },
     {
       "text": "It was a strong day on Wall Street.",
       "speaker": "b",
-      "startFrame": 560,
-      "endFrame": 653
+      "startFrame": 772,
+      "endFrame": 865
     },
     {
       "text": "S&P 500 rose 0.9 percent, Nasdaq fell 1.5 percent, Dow Jones rose 0.5 percent.",
       "speaker": "b",
-      "startFrame": 659,
-      "endFrame": 820
+      "startFrame": 871,
+      "endFrame": 1032
     },
     {
       "text": "In tech, Alphabet rose 3.3 percent and Tesla rose 2.7 percent.",
       "speaker": "b",
-      "startFrame": 826,
-      "endFrame": 953
+      "startFrame": 1038,
+      "endFrame": 1165
     },
     {
       "text": "On the downside, Apple fell 6.4 percent.",
       "speaker": "b",
-      "startFrame": 959,
-      "endFrame": 1040
+      "startFrame": 1171,
+      "endFrame": 1252
     },
     {
       "text": "Sample Wire reports: Open-weight model tops coding benchmark, rivaling closed systems.",
       "speaker": "a",
-      "startFrame": 1115,
-      "endFrame": 1242
+      "startFrame": 1327,
+      "endFrame": 1454
     },
     {
       "text": "A new open-weight language model matched leading proprietary systems on a widely used coding benchmark, while running on a single high-end GPU.",
       "speaker": "a",
-      "startFrame": 1248,
-      "endFrame": 1502
+      "startFrame": 1460,
+      "endFrame": 1714
     },
     {
       "text": "That's one to watch.",
       "speaker": "b",
-      "startFrame": 1512,
-      "endFrame": 1558
+      "startFrame": 1724,
+      "endFrame": 1770
     },
     {
       "text": "Sample Tech Daily reports: Chipmaker unveils inference accelerator aimed at data centers.",
       "speaker": "b",
-      "startFrame": 1633,
-      "endFrame": 1772
+      "startFrame": 1845,
+      "endFrame": 1984
     },
     {
       "text": "The accelerator promises lower cost per token for serving large models and ships to cloud providers next quarter.",
       "speaker": "b",
-      "startFrame": 1778,
-      "endFrame": 1985
+      "startFrame": 1990,
+      "endFrame": 2197
     },
     {
       "text": "That's one to watch.",
       "speaker": "a",
-      "startFrame": 1996,
-      "endFrame": 2042
+      "startFrame": 2208,
+      "endFrame": 2254
+    },
+    {
+      "text": "Time for A.I. in 30 seconds.",
+      "speaker": "a",
+      "startFrame": 2329,
+      "endFrame": 2398
+    },
+    {
+      "text": "What are open-weight models?",
+      "speaker": "a",
+      "startFrame": 2404,
+      "endFrame": 2451
+    },
+    {
+      "text": "An open-weight model is an AI model whose trained parameters, its weights, are published so anyone\ncan download and run it on their own hardware.",
+      "speaker": "b",
+      "startFrame": 2461,
+      "endFrame": 2749
+    },
+    {
+      "text": "That lowers costs and lets companies keep data\nprivate, but it also means the original developer cannot control how the model is used.",
+      "speaker": "b",
+      "startFrame": 2755,
+      "endFrame": 3021
+    },
+    {
+      "text": "Closed\nmodels are only available through the company's own apps or services.",
+      "speaker": "a",
+      "startFrame": 3031,
+      "endFrame": 3170
     },
     {
       "text": "Sample Policy Review reports: Regulators propose new rules for app store payments.",
       "speaker": "a",
-      "startFrame": 2117,
-      "endFrame": 2256
+      "startFrame": 3245,
+      "endFrame": 3383
     },
     {
       "text": "The draft rules would let developers steer customers to outside payment options and cap commission fees.",
       "speaker": "a",
-      "startFrame": 2262,
-      "endFrame": 2446
+      "startFrame": 3389,
+      "endFrame": 3574
     },
     {
       "text": "That's one to watch.",
       "speaker": "b",
-      "startFrame": 2457,
-      "endFrame": 2503
+      "startFrame": 3584,
+      "endFrame": 3631
     },
     {
       "text": "Sample Health Tech reports: Hospital network pilots AI assistant for clinical notes.",
       "speaker": "b",
-      "startFrame": 2578,
-      "endFrame": 2716
+      "startFrame": 3706,
+      "endFrame": 3844
     },
     {
       "text": "Doctors in the pilot spent less time on paperwork, though the network says every note is still reviewed by a clinician.",
       "speaker": "b",
-      "startFrame": 2722,
-      "endFrame": 2965
+      "startFrame": 3850,
+      "endFrame": 4092
     },
     {
       "text": "That's one to watch.",
       "speaker": "a",
-      "startFrame": 2975,
-      "endFrame": 3021
+      "startFrame": 4103,
+      "endFrame": 4149
     },
     {
-      "text": "Sample Science Desk reports: Quantum computing startup reports error-correction milestone.",
-      "speaker": "a",
-      "startFrame": 3096,
-      "endFrame": 3212
-    },
-    {
-      "text": "Researchers kept a logical qubit stable longer than its physical qubits, a key step toward practical machines.",
-      "speaker": "a",
-      "startFrame": 3218,
-      "endFrame": 3414
-    },
-    {
-      "text": "That's one to watch.",
+      "text": "Quiz time!",
       "speaker": "b",
-      "startFrame": 3424,
-      "endFrame": 3470
+      "startFrame": 4224,
+      "endFrame": 4247
+    },
+    {
+      "text": "Which stock on our watchlist moved the most today?",
+      "speaker": "b",
+      "startFrame": 4253,
+      "endFrame": 4357
+    },
+    {
+      "text": "Is it A, Apple; B, AMD; C, Oracle?",
+      "speaker": "a",
+      "startFrame": 4367,
+      "endFrame": 4460
+    },
+    {
+      "text": "Tell us in the comments, and we'll reveal the answer on tomorrow's show.",
+      "speaker": "a",
+      "startFrame": 4466,
+      "endFrame": 4616
     },
     {
       "text": "That's Bits & Bulls for today.",
       "speaker": "a",
-      "startFrame": 3493,
-      "endFrame": 3562
+      "startFrame": 4638,
+      "endFrame": 4707
     },
     {
       "text": "Subscribe so you don't miss tomorrow's update.",
       "speaker": "b",
-      "startFrame": 3573,
-      "endFrame": 3653
+      "startFrame": 4718,
+      "endFrame": 4799
     },
     {
       "text": "See you then!",
       "speaker": "b",
-      "startFrame": 3659,
-      "endFrame": 3694
+      "startFrame": 4805,
+      "endFrame": 4839
     },
     {
       "text": "This show is for information and entertainment only and is not financial advice.",
       "speaker": "b",
-      "startFrame": 3700,
-      "endFrame": 3850
+      "startFrame": 4845,
+      "endFrame": 4995
     },
     {
       "text": "Do your own research before investing.",
       "speaker": "b",
-      "startFrame": 3856,
-      "endFrame": 3925
+      "startFrame": 5001,
+      "endFrame": 5071
     }
   ],
   "youtube": {
     "title": "S&P 500 up 0.9% · Open-weight model tops coding benchmark, rivaling close | Bits & Bulls Nov 24",
-    "description": "Bits & Bulls: your daily three-minute briefing on the stock market and the biggest AI and tech stories, for Tuesday, November 24, 2026, with Maya and Leo.\n\nChapters\n0:00 Intro\n0:13 Markets: S&P 500 up 0.9%\n0:35 Open-weight model tops coding benchmark, rivaling close\n0:52 Chipmaker unveils inference accelerator aimed at data c\n1:08 Regulators propose new rules for app store payments\n1:24 Hospital network pilots AI assistant for clinical notes\n1:41 Quantum computing startup reports error-correction mile\n1:56 Wrap-up\n\nSources\n• Open-weight model tops coding benchmark, rivaling close (Sample Wire): https://example.com/sample/0\n• Chipmaker unveils inference accelerator aimed at data c (Sample Tech Daily): https://example.com/sample/1\n• Regulators propose new rules for app store payments (Sample Policy Review): https://example.com/sample/2\n• Hospital network pilots AI assistant for clinical notes (Sample Health Tech): https://example.com/sample/3\n• Quantum computing startup reports error-correction mile (Sample Science Desk): https://example.com/sample/4\n\nMarket data reflects the 2026-11-24 session close.\nThis show is for information and entertainment only and is not financial advice. Do your own research before investing.\nMaya and Leo are AI-generated characters. Script, voices and animation are produced with AI tools and automated fact checks.\n\n#AI #StockMarket #TechNews",
+    "description": "Bits & Bulls: your daily three-minute briefing on the stock market and the biggest AI and tech stories, for Tuesday, November 24, 2026, with Maya and Leo.\n\nChapters\n0:00 Intro\n0:20 Markets: S&P 500 up 0.9%\n0:42 Open-weight model tops coding benchmark, rivaling close\n0:59 Chipmaker unveils inference accelerator aimed at data c\n1:15 AI in 30 seconds: What are open-weight models?\n1:46 Regulators propose new rules for app store payments\n2:01 Hospital network pilots AI assistant for clinical notes\n2:19 Daily quiz\n2:34 Wrap-up\n\nSources\n• Open-weight model tops coding benchmark, rivaling close (Sample Wire): https://example.com/sample/0\n• Chipmaker unveils inference accelerator aimed at data c (Sample Tech Daily): https://example.com/sample/1\n• Regulators propose new rules for app store payments (Sample Policy Review): https://example.com/sample/2\n• Hospital network pilots AI assistant for clinical notes (Sample Health Tech): https://example.com/sample/3\n\nMarket data reflects the 2026-11-24 session close.\nThis show is for information and entertainment only and is not financial advice. Do your own research before investing.\nMaya and Leo are AI-generated characters. Script, voices and animation are produced with AI tools and automated fact checks.\n\n#AI #StockMarket #TechNews",
     "tags": [
       "AI news",
       "stock market today",
@@ -833,5 +941,19 @@
       "name": "Leo"
     }
   ],
-  "mouths": {}
+  "mouths": {},
+  "short": {
+    "title": "Open-weight model tops coding benchmark, rivaling close #Shorts",
+    "clips": [
+      {
+        "startFrame": 0,
+        "endFrame": 248
+      },
+      {
+        "startFrame": 1274,
+        "endFrame": 1793
+      }
+    ],
+    "durationInFrames": 767
+  }
 }

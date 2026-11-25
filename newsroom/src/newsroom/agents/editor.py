@@ -4,6 +4,7 @@ import logging
 import re
 from dataclasses import dataclass, field
 
+from newsroom.guardrails import GuardrailLog, redact_pii
 from newsroom.models import Line, MarketSnapshot, NewsSegment, ShowScript, spoken
 
 log = logging.getLogger("newsroom.editor")
@@ -105,14 +106,18 @@ def _attributed(seg: NewsSegment) -> bool:
 
 def check_grounding(seg: NewsSegment, material: str, extra_known: str = "") -> list[str]:
     """Flag numbers and proper nouns in the narration that the source material never mentions."""
-    known = f"{material} {seg.source} {extra_known}".lower().replace("’", "'")
+    return check_text_grounding(seg.narration, f"{material} {seg.source}", extra_known)
+
+
+def check_text_grounding(text: str, material: str, extra_known: str = "") -> list[str]:
+    known = f"{material} {extra_known}".lower().replace("’", "'")
     unsupported = []
-    for m in PROPER_RE.finditer(seg.narration.replace("’", "'")):
+    for m in PROPER_RE.finditer(text.replace("’", "'")):
         words = [_norm(w) for w in m.group(0).split()]
         missing = [w for w in words if w and w not in COMMON and w not in known]
         if missing:
             unsupported.append(" ".join(missing))
-    for m in NUMBER_RE.finditer(seg.narration):
+    for m in NUMBER_RE.finditer(text):
         if m.group(0) not in material:
             unsupported.append(m.group(0))
     unsupported = list(dict.fromkeys(unsupported))
@@ -162,6 +167,35 @@ class Editor:
             review.market += [f"bookend: {i}" for i in check_language(text)]
         log.info("review: %s", review.summary())
         return review
+
+    def check_segment(self, lines: list[Line], material: str,
+                      snap: MarketSnapshot | None = None) -> list[str]:
+        """Checks for the cold open and explainer: language, grounding and, if given, numbers."""
+        text = spoken(lines)
+        issues = check_language(text) + check_text_grounding(text, material, self.extra_known)
+        if snap is not None:
+            issues += check_numbers(text, snap)
+        return issues
+
+    def redact(self, script: ShowScript, guard: GuardrailLog) -> ShowScript:
+        """Output guardrail: no personal contact details on air."""
+        def clean(lines: list[Line]) -> list[Line]:
+            out = []
+            for ln in lines:
+                text, n = redact_pii(ln.text)
+                if n:
+                    guard.add("output", "pii_redacted", "warn", "editor", ln.text)
+                out.append(Line(speaker=ln.speaker, text=text))
+            return out
+
+        update: dict = {"intro": clean(script.intro), "outro": clean(script.outro),
+                        "cold_open": clean(script.cold_open),
+                        "market": script.market.model_copy(update={"lines": clean(script.market.lines)}),
+                        "stories": [s.model_copy(update={"lines": clean(s.lines)}) for s in script.stories]}
+        if script.explainer:
+            update["explainer"] = script.explainer.model_copy(
+                update={"lines": clean(script.explainer.lines)})
+        return script.model_copy(update=update)
 
     def enforce(self, script: ShowScript) -> ShowScript:
         market = script.market.model_copy(

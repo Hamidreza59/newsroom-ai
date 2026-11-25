@@ -4,6 +4,7 @@ import re
 from datetime import date
 
 from newsroom.agents.base import Agent
+from newsroom.guardrails import UNTRUSTED_NOTICE, as_data
 from newsroom.models import (
     BookendCopy,
     Line,
@@ -37,20 +38,19 @@ class Scriptwriter(Agent):
         system = (
             f"You write news copy for '{self.show_name}'.\n{self.cast()}\n"
             f"Style rules:\n{guide}\n"
-            f"Write 2 or 3 dialogue lines, 40 to 70 words in total. {lead_name} (speaker "
+            f"Write 2 or 3 dialogue lines, 35 to 55 words in total. {lead_name} (speaker "
             f"\"{lead}\") reports the story and names the outlet. {co_name} (speaker \"{co}\") "
-            "adds one short reaction or question, at most 15 words, with no new facts. "
+            "adds one short reaction or question, at most 12 words, with no new facts. "
             f"{lead_name} may answer in one short line, only from the material. "
             "STRICT: every fact must come from the title or summary given. Do not add "
             "background, dates, people, reasons or numbers that are not in the material; if the "
             "material is thin, write less. Headline: max 55 characters. Points: exactly 3 short "
-            "fragments, max 70 characters each, also only from the material."
+            "fragments, max 70 characters each, also only from the material. " + UNTRUSTED_NOTICE
         )
-        user = (
+        user = as_data("source", (
             f"Outlet: {item.source}\nCategory: {item.category}\nTitle: {item.title}\n"
-            f"Summary: {item.summary or '(no summary, use the title only)'}\n"
-            f"Follow-up to a story covered earlier this week: {'yes' if item.follow_up else 'no'}"
-        )
+            f"Summary: {item.summary or '(no summary, use the title only)'}"
+        )) + f"\nFollow-up to a story covered earlier this week: {'yes' if item.follow_up else 'no'}"
         if feedback:
             user += f"\n\nThe editor rejected your previous draft. Fix these issues:\n{feedback}"
         copy = await self.ask(system, user, StoryCopy, lambda: self.fallback_story(item, index))
@@ -70,9 +70,9 @@ class Scriptwriter(Agent):
         system = (
             f"You write the opening and closing of '{self.show_name}', a daily show about markets "
             f"and AI/tech news.\n{self.cast()}\nStyle rules:\n{guide}\n"
-            f"Intro: 2 or 3 lines, 30 to 50 words in total. {a} greets viewers, names the show "
+            f"Intro: 2 lines, 20 to 35 words in total. {a} greets viewers, names the show "
             f"and the date and gives their name; {b} gives their name and teases the top two "
-            "items. Outro: 2 lines, 15 to 30 words in total, a friendly sign-off from both "
+            "items. Outro: 2 lines, 12 to 20 words in total, a friendly sign-off from both "
             "inviting viewers to subscribe for tomorrow. Do not write a disclaimer."
         )
         rundown = "\n".join(f"- {s.headline}" for s in stories)
@@ -101,7 +101,7 @@ class Scriptwriter(Agent):
         lines = [Line(speaker=lead,
                       text=f"{opener}{item.source} reports: {item.title}. " + " ".join(summary))]
         lines.append(Line(speaker=co, text="That's one to watch."))
-        points = [s[:70] for s in summary] or [item.title[:70]]
+        points = list(summary) or [item.title]
         while len(points) < 3:
             points.append(f"Source: {item.source}" if len(points) == 1 else item.category + " news")
         return StoryCopy(headline=item.title[:55], points=points[:3], lines=lines)

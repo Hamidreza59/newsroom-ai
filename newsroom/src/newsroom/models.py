@@ -118,15 +118,55 @@ class NewsSegment(BaseModel):
         return spoken(self.lines)
 
 
+class HookCopy(BaseModel):
+    lines: list[Line] = Field(description="One or two punchy cold-open lines")
+
+
+class ExplainerCopy(BaseModel):
+    title: str = Field(description='On-screen title, e.g. "What is a GPU?", max 40 characters')
+    steps: list[str] = Field(description="Exactly 3 short on-screen steps, max 60 chars each")
+    lines: list[Line] = Field(description="The anchors' dialogue explaining the concept")
+
+
+class QuizDraft(BaseModel):
+    question: str = Field(description="Multiple-choice question about today's news, max 90 chars")
+    options: list[str] = Field(description="Exactly 3 short answer options")
+    answer_index: int = Field(description="0-based index of the correct option")
+    story_id: str = Field(description="Id of the story the answer comes from")
+
+
+class Quiz(BaseModel):
+    question: str
+    options: list[str]
+    answer_index: int
+    lines: list[Line]
+    reveal: str = ""
+    reveal_lines: list[Line] = Field(default_factory=list)
+
+
+class Explainer(BaseModel):
+    key: str
+    title: str
+    steps: list[str]
+    lines: list[Line]
+
+
 class ShowScript(BaseModel):
     intro: list[Line]
     market: MarketBrief
     stories: list[NewsSegment]
     outro: list[Line]
+    cold_open: list[Line] = Field(default_factory=list)
+    explainer: Explainer | None = None
+    quiz: Quiz | None = None
 
     def word_count(self) -> int:
         parts = [spoken(self.intro), self.market.narration, spoken(self.outro),
-                 *(s.narration for s in self.stories)]
+                 spoken(self.cold_open), *(s.narration for s in self.stories)]
+        if self.explainer:
+            parts.append(spoken(self.explainer.lines))
+        if self.quiz:
+            parts.append(spoken(self.quiz.reveal_lines + self.quiz.lines))
         return sum(len(p.split()) for p in parts)
 
 
@@ -166,7 +206,7 @@ class Anchor(_Camel):
     name: str
 
 
-SceneType = Literal["intro", "market", "news", "outro"]
+SceneType = Literal["coldopen", "intro", "market", "explainer", "news", "quiz", "outro"]
 
 
 class Scene(_Camel):
@@ -183,6 +223,19 @@ class Scene(_Camel):
     total: int = 0
     alert: str = ""
     alert_frames: int = 0
+    options: list[str] = Field(default_factory=list)
+    reveal: str = ""
+
+
+class ShortClip(_Camel):
+    start_frame: int
+    end_frame: int
+
+
+class ShortSpec(_Camel):
+    title: str
+    clips: list[ShortClip]
+    duration_in_frames: int
 
 
 class YouTubeMeta(_Camel):
@@ -207,3 +260,4 @@ class Episode(_Camel):
     disclaimer: str
     anchors: list[Anchor]
     mouths: dict[str, list[float]] = Field(default_factory=dict)
+    short: ShortSpec | None = None

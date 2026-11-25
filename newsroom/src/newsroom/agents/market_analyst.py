@@ -43,7 +43,7 @@ class MarketAnalyst(Agent):
             f"You write the market segment of '{self.show_name}', a daily markets and AI news "
             f"show.\n{self.cast()}\n"
             f"Style rules:\n{guide}\n"
-            f"Write 3 or 4 dialogue lines, 60 to 90 words in total. {b} leads the markets: the "
+            f"Write 3 dialogue lines, 45 to 70 words in total. {b} leads the markets: the "
             f"first line is {a} handing over to {b} in a few words, then {b} covers the three "
             f"indices, the standout AI and tech movers and the one-month trend. {a} may add one "
             "short reaction or question. Use only numbers from the fact sheet. "

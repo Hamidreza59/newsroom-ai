@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -21,6 +22,13 @@ CREATE TABLE IF NOT EXISTS docs (
     PRIMARY KEY (id, collection, embedder)
 );
 CREATE INDEX IF NOT EXISTS docs_coll_date ON docs (collection, embedder, date);
+CREATE TABLE IF NOT EXISTS segments (
+    kind TEXT NOT NULL,
+    key TEXT NOT NULL,
+    date TEXT NOT NULL,
+    payload TEXT NOT NULL,
+    PRIMARY KEY (kind, date)
+);
 """
 
 
@@ -40,7 +48,8 @@ class VectorStore:
         self.embedder = embedder
         if str(path) != ":memory:":
             Path(path).parent.mkdir(parents=True, exist_ok=True)
-        self.db = sqlite3.connect(str(path))
+        self.db = sqlite3.connect(str(path), check_same_thread=False)
+        self.lock = threading.RLock()
         self.db.executescript(SCHEMA)
 
     def add(self, collection: str, docs: list[tuple[str, str, str, dict]]) -> int:
@@ -53,8 +62,9 @@ class VectorStore:
              vec.astype(np.float32).tobytes())
             for (doc_id, date, text, meta), vec in zip(docs, vecs, strict=True)
         ]
-        self.db.executemany("INSERT OR REPLACE INTO docs VALUES (?,?,?,?,?,?,?)", rows)
-        self.db.commit()
+        with self.lock:
+            self.db.executemany("INSERT OR REPLACE INTO docs VALUES (?,?,?,?,?,?,?)", rows)
+            self.db.commit()
         return len(rows)
 
     def count(self, collection: str) -> int:
@@ -75,7 +85,8 @@ class VectorStore:
         if until:
             sql += " AND date < ?"
             args.append(until)
-        rows = self.db.execute(sql, args).fetchall()
+        with self.lock:
+            rows = self.db.execute(sql, args).fetchall()
         if not rows:
             return []
         matrix = np.stack([np.frombuffer(r[4], dtype=np.float32) for r in rows])
@@ -86,6 +97,26 @@ class VectorStore:
             Hit(rows[i][0], rows[i][2], rows[i][1], json.loads(rows[i][3]), float(sims[i]))
             for i in order
         ]
+
+
+class SegmentLog:
+    """Remembers recurring segments (explainer topics, quizzes) across shows."""
+
+    def __init__(self, store: VectorStore):
+        self.db, self.lock = store.db, store.lock
+
+    def record(self, kind: str, key: str, date: str, payload: dict) -> None:
+        with self.lock:
+            self.db.execute("INSERT OR REPLACE INTO segments VALUES (?,?,?,?)",
+                            (kind, key, date, json.dumps(payload)))
+            self.db.commit()
+
+    def recent(self, kind: str, since: str, before: str) -> list[dict]:
+        with self.lock:
+            rows = self.db.execute(
+                "SELECT key, date, payload FROM segments WHERE kind=? AND date>=? AND date<? "
+                "ORDER BY date DESC", (kind, since, before)).fetchall()
+        return [{"key": k, "date": d, "payload": json.loads(p)} for k, d, p in rows]
 
 
 def chunk_markdown(text: str) -> list[tuple[str, str]]:

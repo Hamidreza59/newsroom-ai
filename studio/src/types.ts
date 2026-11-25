@@ -21,7 +21,7 @@ export type Caption = { text: string; speaker: "a" | "b"; startFrame: number; en
 
 export type Anchor = { id: "a" | "b"; name: string };
 
-export type SceneType = "intro" | "market" | "news" | "outro";
+export type SceneType = "coldopen" | "intro" | "market" | "explainer" | "news" | "quiz" | "outro";
 
 export type Scene = {
   type: SceneType;
@@ -37,6 +37,8 @@ export type Scene = {
   total: number;
   alert: string;
   alertFrames: number;
+  options: string[];
+  reveal: string;
 };
 
 export type Episode = {
@@ -55,4 +57,5 @@ export type Episode = {
   disclaimer: string;
   anchors: Anchor[];
   mouths: Record<string, number[]>;
+  short: { title: string; clips: { startFrame: number; endFrame: number }[]; durationInFrames: number } | null;
 };

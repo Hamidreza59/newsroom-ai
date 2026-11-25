@@ -2,6 +2,7 @@ import React from "react";
 import { Composition, type CalculateMetadataFunction } from "remotion";
 import { DailyShow } from "./DailyShow";
 import sample from "./sample-episode.json";
+import { ShortVideo } from "./ShortVideo";
 import { Thumbnail } from "./Thumbnail";
 import type { Episode } from "./types";
 
@@ -25,6 +26,16 @@ export const RemotionRoot: React.FC = () => (
       height={1080}
       defaultProps={sampleEpisode}
       calculateMetadata={showMetadata}
+    />
+    <Composition
+      id="Short"
+      component={ShortVideo}
+      durationInFrames={sampleEpisode.short?.durationInFrames ?? 1}
+      fps={sampleEpisode.fps}
+      width={1080}
+      height={1920}
+      defaultProps={sampleEpisode}
+      calculateMetadata={({ props }) => ({ durationInFrames: Math.max(1, props.short?.durationInFrames ?? 1) })}
     />
     <Composition
       id="Thumbnail"

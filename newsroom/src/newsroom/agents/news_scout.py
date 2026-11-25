@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from newsroom.agents.base import Agent
 from newsroom.data.news import RSS_FEEDS, tokens
+from newsroom.guardrails import UNTRUSTED_NOTICE, as_data, policy_violation, sanitize_untrusted
 from newsroom.models import NewsItem, StoryPicks
 
 REPEAT_THRESHOLD = 0.8
@@ -16,8 +17,8 @@ class NewsScout(Agent):
 
     async def run(self, count: int, show_date: str) -> list[NewsItem]:
         raw = await self.tools.call("get_ai_tech_news", hours=30, limit=25)
-        candidates = [NewsItem.model_validate(r) for r in raw]
-        self.log.info("wire returned %d candidate stories", len(candidates))
+        candidates = [c for c in (self.screen(NewsItem.model_validate(r)) for r in raw) if c]
+        self.log.info("wire returned %d candidate stories after screening", len(candidates))
 
         fresh: list[NewsItem] = []
         for item in candidates:
@@ -32,17 +33,18 @@ class NewsScout(Agent):
             fresh.append(item.model_copy(update={"follow_up": best >= FOLLOW_UP_THRESHOLD}))
 
         pool = fresh[:15]
-        listing = "\n".join(
+        listing = as_data("source", "\n".join(
             f"{i.id} | {i.category} | {i.source} | covered by {i.coverage} outlets | {i.title} — "
             f"{i.summary[:160]}"
             for i in pool
-        )
+        ))
         system = (
             "You are the news editor of a daily markets and AI/tech news show for a general, "
             f"tech-curious audience. Choose the {count} most newsworthy stories. Prefer real news "
             "(launches, research results, regulation, business moves) over opinion pieces, guides "
             "and listicles. Never pick two stories about the same event or company. Include at "
-            "least two AI stories. Return their ids, most important first."
+            "least two AI stories. Return their ids, most important first. "
+            + UNTRUSTED_NOTICE
         )
         picks = await self.ask(
             system, f"Candidate stories:\n{listing}", StoryPicks, lambda: self.fallback(pool, count)
@@ -59,11 +61,27 @@ class NewsScout(Agent):
         self.log.info("picked: %s", "; ".join(c.title[:50] for c in chosen))
         return chosen
 
+    def screen(self, item: NewsItem) -> NewsItem | None:
+        """Input guardrails: content policy and prompt-injection hygiene for untrusted web text."""
+        if rule := policy_violation(f"{item.title} {item.summary}"):
+            self.guard.add("policy", rule, "block", self.role, item.title)
+            return None
+        title, t_flag = sanitize_untrusted(item.title, 200)
+        summary, s_flag = sanitize_untrusted(item.summary)
+        if t_flag or s_flag:
+            self.guard.add("input", "prompt_injection", "warn", self.role, item.title)
+        return item.model_copy(update={"title": title, "summary": summary})
+
     async def enrich(self, item: NewsItem) -> NewsItem:
         details = await self.tools.call("get_article_details", url=item.url)
         update: dict = {}
-        if len(details.get("description", "")) > len(item.summary):
-            update["summary"] = details["description"]
+        description, flagged = sanitize_untrusted(details.get("description", ""))
+        if flagged:
+            self.guard.add("input", "prompt_injection", "warn", self.role, item.url)
+        if policy_violation(description):
+            description = ""
+        if len(description) > len(item.summary):
+            update["summary"] = description
         site = details.get("site_name", "").strip()
         if site and 2 <= len(site) <= 40 and item.source not in RSS_SOURCES:
             update["source"] = site

@@ -9,6 +9,8 @@ One command, under three minutes of video, ready for YouTube.
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
+![LangGraph](https://img.shields.io/badge/LangGraph-1.2-1C3C3C)
+![LangChain](https://img.shields.io/badge/LangChain-1.x-1C3C3C)
 ![MCP](https://img.shields.io/badge/Model_Context_Protocol-v2-111827)
 ![Remotion](https://img.shields.io/badge/Remotion-4-0B84F3)
 ![Ollama](https://img.shields.io/badge/LLM-Ollama%20·%20OpenAI--compatible-000000)
@@ -28,6 +30,8 @@ One command, under three minutes of video, ready for YouTube.
   - [The agents](#the-agents)
   - [MCP server](#mcp-server)
   - [Retrieval-augmented generation](#retrieval-augmented-generation)
+  - [Model routing](#model-routing)
+  - [Guardrails](#guardrails)
   - [Fact-checking and safety rails](#fact-checking-and-safety-rails)
   - [Video studio](#video-studio)
 - [Quick start](#quick-start)
@@ -49,13 +53,15 @@ original animated co-anchors, **Maya** and **Leo**:
 
 1. **Gathers** the closing numbers for the S&P 500, Nasdaq, Dow and an AI/big-tech watchlist, plus
    the last 30 hours of AI and technology news from RSS feeds and Hacker News.
-2. **Edits** like a newsroom: five cooperating agents pick the stories, write a natural two-person
-   dialogue, fact-check every number and name against the sources, and enforce a strict time budget.
+2. **Edits** like a newsroom: eight cooperating agents, orchestrated with **LangGraph**, pick the
+   stories, write a natural two-person dialogue, add a cold-open hook, an "AI in 30 seconds"
+   explainer and a daily quiz, fact-check every number and name, and enforce a strict time budget.
 3. **Produces** the show: per-anchor voices, per-sentence captions, lip-sync tracks, an original
    synthesized "news alert" sting before each segment, chapters and sources for the YouTube
    description, and a thumbnail.
-4. **Renders** a 1080p broadcast-style video: a virtual camera cuts between wide, two-shot,
-   close-up and big-screen shots of an illustrated newsroom, with a live ticker and lower thirds.
+4. **Renders** a 1080p broadcast-style video, where a virtual camera cuts between wide, two-shot,
+   close-up and big-screen shots of an illustrated newsroom, plus a vertical **YouTube Short** of
+   the top story.
 
 The default stack is **free and runs locally**: Ollama for the LLM, Kokoro for the voices, public
 data sources. Every provider is pluggable, so moving to hosted models or premium voices is a
@@ -65,13 +71,17 @@ config change, not a rewrite.
 
 | | |
 |---|---|
-| 🤖 **Multi-agent pipeline** | News Scout, Market Analyst, Scriptwriter, Editor and Producer, each with one job |
+| 🤖 **Multi-agent LangGraph** | Eight single-purpose agents in a state graph with parallel branches, a bounded revision loop and a human-approval gate |
+| ⚡ **Right-sized models** | Each agent declares a `fast` or `smart` tier; cheap models do constrained jobs that code can verify |
+| 🛡️ **Guardrails** | Prompt-injection hygiene, content policy, least-privilege tools, LLM budget + circuit breaker, PII redaction, audit log |
 | 🔌 **MCP-native** | All data and memory access goes through a Model Context Protocol server over stdio |
 | 🧠 **RAG memory** | Semantic archive of past shows (no repeats, automatic follow-ups) plus a retrievable style guide |
 | ✅ **Grounded output** | Deterministic checks reject numbers that don't match the data and names that aren't in the source |
 | 🎙️ **Two-anchor dialogue** | Distinct voices, hand-offs and reactions, speaker-tagged captions |
 | 🎬 **Broadcast look** | Newsroom set, big TV on a stand, camera cuts, news-alert bumpers, ticker, lower thirds |
 | 🎭 **Expressive anchors** | Script-driven expressions, emphasis gestures, glances at notes, natural posture shifts |
+| 🎯 **Engagement segments** | Cold-open hook, "AI in 30 seconds" explainer from a vetted knowledge base, daily quiz with tomorrow's reveal |
+| 📱 **Auto Shorts** | A vertical 1080×1920 cut of the hook and top story, ≤ 58 s |
 | 👔 **Daily wardrobe** | Each anchor gets a different seeded outfit every episode |
 | ⏱️ **Hard 3-minute cap** | The Producer measures real audio and drops the lowest-ranked story if needed |
 | 💸 **$0 to run** | Local LLM and TTS; deterministic fallbacks keep the run going if the model fails |
@@ -105,24 +115,29 @@ flowchart LR
         T4[search_news_archive]
         T5[search_style_guide]
         T6[record_coverage]
+        T7[search_explainers]
+        T8[record / recent_segments]
         V[(SQLite<br/>vector store)]
-        T4 & T5 & T6 --- V
+        T4 & T5 & T6 & T7 & T8 --- V
     end
 
-    subgraph Agents["Agents · orchestrated pipeline"]
+    subgraph Agents["Agents · LangGraph state graph"]
         S[News Scout] --> W[Scriptwriter]
         A[Market Analyst] --> W
-        W --> E{Editor}
-        E -- "issues → revise" --> W
-        E -- "issues → revise" --> A
+        W --> HK["Hook Writer ⚡"]
+        W --> EX[Explainer]
+        W --> QZ["Quiz Master ⚡"]
+        HK & EX & QZ --> E{Editor}
+        E -- "issues → revise (≤2)" --> W
         E -- approved --> P[Producer]
+        P --> G{{Human review gate}}
     end
 
     Sources --> MCP
     Agents <-->|MCP over stdio| MCP
     P --> J["episode.json · narration.wav<br/>captions.srt · youtube.json"]
     J --> R2["Remotion studio · TypeScript/React"]
-    R2 --> M["video.mp4 · thumbnail.png"]
+    R2 --> M["video.mp4 · short.mp4 · thumbnail.png"]
 ```
 
 The system has two halves joined by a single data contract, `episode.json`:
@@ -132,20 +147,46 @@ The system has two halves joined by a single data contract, `episode.json`:
 
 ### The agents
 
-The orchestrator (`pipeline.py`) runs the agents as a deterministic workflow. Agents exchange
-typed Pydantic objects (`NewsItem`, `MarketBrief`, `ShowScript`, `Episode`), and the Editor's
-feedback is routed back to whichever agent wrote the failing copy.
+The orchestrator (`pipeline.py`) is a **LangGraph `StateGraph`**. Market and Scout run in
+parallel, the three segment agents run in parallel after the Scriptwriter, the Editor's feedback
+loops back through a conditional edge (at most two rounds), and an optional `interrupt` asks a
+human to approve episodes where guardrails had to rewrite on-air copy. Agents exchange typed
+Pydantic objects through the graph state. Run `uv run newsroom graph` to print the live graph.
 
-| Agent | Uses LLM | Responsibility |
+| Agent | Tier | Responsibility |
 |---|:---:|---|
-| **News Scout** | ✅ | Pulls ~25 candidates, drops stories already covered (RAG), flags follow-ups, asks the LLM to pick the five most newsworthy, enriches each with the publisher's own description |
-| **Market Analyst** | ✅ | Builds a verified fact sheet from market data and writes the markets dialogue from it |
-| **Scriptwriter** | ✅ | Writes each story as a dialogue (lead reports, co-anchor reacts), plus the open and sign-off, guided by the retrieved style guide |
-| **Editor** | — | Rule-based standards desk: number checks, grounding checks, attribution, advice/hype filters, on-screen text limits; up to two revision rounds, then source-only fallback |
-| **Producer** | — | Voices each line, inserts alert stings, builds captions and lip-sync tracks, enforces the time cap, writes YouTube chapters, sources and disclosures |
+| **News Scout** | 🧠 smart | Screens ~25 candidates (content policy, injection hygiene), drops repeats via RAG, flags follow-ups, picks the top stories, enriches them with publisher descriptions |
+| **Market Analyst** | 🧠 smart | Writes the markets dialogue from a verified fact sheet |
+| **Scriptwriter** | 🧠 smart | Writes each story as a two-anchor dialogue, plus the open and sign-off, guided by the retrieved style guide |
+| **Hook Writer** | ⚡ fast | Writes the 5-second cold open from the top story and the biggest market move |
+| **Explainer** | 🧠 smart | Picks a concept tied to today's news from a curated knowledge base and explains it in about 30 seconds |
+| **Quiz Master** | ⚡ fast | Writes a multiple-choice question about today's news; reveals the last show's answer from memory |
+| **Editor** | 🔧 rules | Numbers, grounding, attribution, advice and hype filters, PII redaction, on-screen limits |
+| **Producer** | 🔧 rules | Voices, stings, captions, lip-sync, 3-minute cap, chapters, the Short's clip plan, disclosures |
 
 Every LLM call has a deterministic fallback, so a slow or confused model degrades the copy but never
-breaks the daily run.
+breaks the daily run. See **[docs/AGENTIC_PRINCIPLES.md](docs/AGENTIC_PRINCIPLES.md)** for how
+each agentic-AI principle maps to code.
+
+### Model routing
+
+`LlmRouter` gives each agent a provider for its tier, built on **LangChain** chat models
+(`ChatOllama`, `ChatOpenAI`) with `with_structured_output` against Pydantic schemas and automatic
+retries. The rule of thumb: **fast** models get short, tightly constrained outputs that code
+verifies (the hook, the quiz); **smart** models get editorial judgment and long-form writing. The
+router also enforces a per-run LLM call budget and opens a circuit breaker after repeated
+failures, switching every agent to its fallback.
+
+### Guardrails
+
+| Layer | What it does |
+|---|---|
+| **Input** | Web text is stripped of control characters and prompt-injection phrases, then wrapped as `<source>` data that prompts are told never to obey |
+| **Policy** | Stories about explicit, graphic, self-harm or hate topics are excluded before any model sees them |
+| **Tools** | Least privilege: each agent can call only its allowlisted MCP tools, within a call budget |
+| **Budget** | Per-run LLM call cap and circuit breaker |
+| **Output** | Fact and grounding checks, quiz-answer verification, advice and hype filters, PII redaction |
+| **Audit** | Every decision is logged to `guardrails.json`; serious ones set `needs_review` and trigger the approval gate with `--review` |
 
 ### MCP server
 
@@ -160,7 +201,9 @@ Claude Desktop or any other MCP client.
 | `get_article_details` | Publisher name and official description from page metadata (grounding) |
 | `search_news_archive` | RAG lookup over stories covered on previous shows |
 | `search_style_guide` | RAG lookup over the newsroom style guide |
+| `search_explainers` | RAG lookup over the curated explainer knowledge base |
 | `record_coverage` | Writes today's stories into the archive |
+| `record_segment` / `recent_segments` | Memory for recurring segments (explainer topics, quiz answers) |
 
 ### Retrieval-augmented generation
 
@@ -171,6 +214,9 @@ A small SQLite-backed vector store (`rag/store.py`) holds two collections:
   and is skipped; 0.55–0.80 becomes a **follow-up**, which gets its own alert and on-air framing.
 - **Style guide:** `rag/style_guide.md` is chunked by section, and the most relevant rules (tone,
   number formatting, attribution, length) are retrieved into each writing prompt.
+- **Explainer knowledge base:** `rag/explainers.md` holds vetted plain-language entries (GPUs,
+  tokens, AI agents, indices, zero-days…). The Explainer retrieves the entry closest to today's
+  stories, skips topics used in the last three weeks, and may only use facts from that entry.
 
 Embeddings default to an offline feature-hashing model for zero setup. Set `EMBEDDER=ollama` to use
 `nomic-embed-text` for true semantic matching.
@@ -243,7 +289,9 @@ uv run newsroom run --help              # all options
 uv run newsroom run --offline --llm mock --tts silent
 uv run newsroom run --llm ollama --tts kokoro
 uv run newsroom render --date 2026-11-24
+uv run newsroom run --review            # pause for approval if guardrails fired
 uv run newsroom tools                   # list the MCP server's tools
+uv run newsroom graph                   # print the LangGraph orchestration as Mermaid
 ```
 
 </details>
@@ -257,13 +305,15 @@ Copy `.env.example` to `.env`. All settings are optional.
 | Variable | Default | Notes |
 |---|---|---|
 | `LLM_PROVIDER` | `ollama` | `ollama`, `openai` (any OpenAI-compatible API, such as Groq, OpenRouter or OpenAI) or `mock` |
-| `OLLAMA_MODEL` | `qwen2.5:14b` | Any local model with JSON output |
-| `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `OPENAI_MODEL` | Groq endpoint | Used when `LLM_PROVIDER=openai` |
+| `OLLAMA_MODEL` / `OLLAMA_FAST_MODEL` | `qwen2.5:14b` / `llama3.2` | Smart and fast tiers |
+| `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `OPENAI_MODEL` / `OPENAI_FAST_MODEL` | Groq endpoint | Used when `LLM_PROVIDER=openai` |
+| `LLM_CALL_BUDGET` | `40` | Maximum LLM calls per episode |
+| `HUMAN_REVIEW` | `false` | Pause for approval when guardrails rewrite on-air copy (same as `--review`) |
 | `TTS_PROVIDER` | `kokoro` | `kokoro` (Apache-2.0 voices), `say` (macOS preview only) or `silent` |
 | `ANCHOR_A_NAME` / `ANCHOR_A_VOICE` | `Maya` / `af_heart` | Any Kokoro voice |
 | `ANCHOR_B_NAME` / `ANCHOR_B_VOICE` | `Leo` / `am_michael` | Any Kokoro voice |
 | `EMBEDDER` | `hashing` | `ollama` for `nomic-embed-text` |
-| `STORIES_PER_SHOW` | `5` | Upper bound; the Producer may drop stories to fit |
+| `STORIES_PER_SHOW` | `4` | Upper bound; the Producer may drop stories to fit |
 | `MAX_SECONDS` | `178` | Hard cap on episode length |
 | `SHOW_NAME` | `Bits & Bulls` | Used on screen, in the script and in metadata |
 
@@ -276,12 +326,16 @@ Each run writes to `out/<YYYY-MM-DD>/`:
 | File | Description |
 |---|---|
 | `video.mp4` | 1920×1080 H.264 at 30 fps, under 3 minutes |
+| `short.mp4` / `short.json` | 1080×1920 YouTube Short (≤ 58 s) and its title and description |
 | `thumbnail.png` | 1280×720 YouTube thumbnail |
 | `youtube.json` | Title, description with chapters, sources and disclosures, and tags |
 | `captions.srt` | Speaker-labelled subtitles for YouTube |
 | `script.md` | Readable two-anchor script with source links, for human review |
 | `episode.json` | The renderer's input: scenes, captions, market data, lip-sync tracks |
 | `narration.wav` | Mixed voices and alert stings |
+| `run_report.json` | Models per tier, LLM calls versus budget, per-agent usage, quality metrics, guardrail counts |
+| `guardrails.json` | Every guardrail event and whether the episode needs review |
+| `trace.jsonl` | One span per graph node, LLM call and tool call |
 
 ---
 
@@ -291,21 +345,25 @@ Each run writes to `out/<YYYY-MM-DD>/`:
 newsroom-ai/
 ├── newsroom/                      Python package (uv)
 │   ├── src/newsroom/
-│   │   ├── mcp_server.py          MCP tools: market, news, article details, RAG
-│   │   ├── pipeline.py            orchestrator: agents, revision loop, time budget
-│   │   ├── agents/                news_scout · market_analyst · scriptwriter · editor · producer
+│   │   ├── mcp_server.py          MCP tools: market, news, article details, RAG, segment memory
+│   │   ├── pipeline.py            LangGraph state graph: agents, revision loop, review gate
+│   │   ├── guardrails.py          input hygiene, content policy, scoped tools, PII, audit log
+│   │   ├── observability.py       spans, metrics, trace.jsonl
+│   │   ├── agents/                scout · analyst · scriptwriter · segments (hook, explainer, quiz) · editor · producer
 │   │   ├── data/                  market data, RSS + Hacker News, sample data
-│   │   ├── rag/                   embedders, SQLite vector store, style_guide.md
-│   │   ├── llm.py                 Ollama / OpenAI-compatible / mock providers
+│   │   ├── rag/                   embedders, SQLite vector store, style_guide.md, explainers.md
+│   │   ├── llm.py                 LangChain providers + tiered router, budget, circuit breaker
 │   │   ├── tts.py                 Kokoro / macOS say / silent engines
 │   │   ├── sfx.py                 synthesized news-alert sting
 │   │   └── cli.py                 `newsroom` command
 │   └── tests/
 ├── studio/                        Remotion project (TypeScript/React)
 │   ├── src/DailyShow.tsx          main composition
+│   ├── src/ShortVideo.tsx         vertical YouTube Short
 │   ├── src/Thumbnail.tsx
-│   ├── src/scenes/                intro · market · news · outro (big-TV content)
+│   ├── src/scenes/                cold open · intro · market · explainer · news · quiz · outro
 │   └── src/components/            Newsroom set + camera, Presenter, wardrobe, AlertCard, charts, ticker
+├── docs/AGENTIC_PRINCIPLES.md     principle → implementation map
 ├── docs/images/                   README screenshots
 ├── Makefile
 └── .env.example
@@ -319,8 +377,9 @@ newsroom-ai/
 make test
 ```
 
-This runs `pytest` (including an end-to-end offline episode and the MCP server over its real
-protocol), `ruff`, and `tsc --noEmit` for the studio.
+This runs `pytest` (the full LangGraph episode offline, the MCP server over its real protocol,
+guardrails, routing, circuit breaker, quiz verification and the graph's shape), `ruff`, and
+`tsc --noEmit` for the studio.
 
 The offline path (`--offline --llm mock --tts silent`) needs no network or model, which keeps the
 tests fast and deterministic.
@@ -366,7 +425,9 @@ flowchart LR
 - [ ] Containerized pipeline on AWS Lambda, triggered by EventBridge after the market close
 - [ ] Hosted LLM provider (Amazon Bedrock) and semantic embeddings
 - [ ] Distributed rendering with Remotion Lambda, assets in S3
-- [ ] Optional human-approval step, then upload through the YouTube Data API
+- [ ] Human approval in the cloud (the LangGraph review gate, surfaced through SNS or Slack), then upload through the YouTube Data API
+- [ ] Durable LangGraph checkpoints (Postgres or DynamoDB) so failed runs resume
+- [ ] Viewer-question segment from YouTube comments
 - [ ] Licensed market-data provider
 - [ ] Premium voice provider (ElevenLabs/OpenAI TTS) behind the existing `TtsEngine` interface
 - [ ] Optional photoreal presenters through an AI-avatar provider
@@ -392,6 +453,8 @@ Released under the [MIT License](LICENSE). The *Bits & Bulls* name, the Maya and
 the set design and the sound effects are original to this project.
 
 Built with
+[LangGraph](https://langchain-ai.github.io/langgraph/) ·
+[LangChain](https://python.langchain.com) ·
 [Model Context Protocol](https://modelcontextprotocol.io) ·
 [Remotion](https://www.remotion.dev) ·
 [Ollama](https://ollama.com) ·

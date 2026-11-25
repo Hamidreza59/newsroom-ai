@@ -56,6 +56,7 @@ class Settings:
     llm_provider: str = field(default_factory=lambda: _env("LLM_PROVIDER", "ollama"))
     ollama_url: str = field(default_factory=lambda: _env("OLLAMA_URL", "http://localhost:11434"))
     ollama_model: str = field(default_factory=lambda: _env("OLLAMA_MODEL", "qwen2.5:14b"))
+    ollama_fast_model: str = field(default_factory=lambda: _env("OLLAMA_FAST_MODEL", "llama3.2"))
     openai_base_url: str = field(
         default_factory=lambda: _env("OPENAI_BASE_URL", "https://api.groq.com/openai/v1")
     )
@@ -63,6 +64,11 @@ class Settings:
     openai_model: str = field(
         default_factory=lambda: _env("OPENAI_MODEL", "llama-3.3-70b-versatile")
     )
+    openai_fast_model: str = field(
+        default_factory=lambda: _env("OPENAI_FAST_MODEL", "llama-3.1-8b-instant")
+    )
+    llm_call_budget: int = field(default_factory=lambda: int(_env("LLM_CALL_BUDGET", "40")))
+    human_review: bool = field(default_factory=lambda: _bool("HUMAN_REVIEW"))
 
     tts_provider: str = field(default_factory=lambda: _env("TTS_PROVIDER", "kokoro"))
     anchor_a_name: str = field(default_factory=lambda: _env("ANCHOR_A_NAME", "Maya"))
@@ -76,7 +82,7 @@ class Settings:
         default_factory=lambda: _env("OLLAMA_EMBED_MODEL", "nomic-embed-text")
     )
 
-    stories_per_show: int = field(default_factory=lambda: int(_env("STORIES_PER_SHOW", "5")))
+    stories_per_show: int = field(default_factory=lambda: int(_env("STORIES_PER_SHOW", "4")))
     max_seconds: float = field(default_factory=lambda: float(_env("MAX_SECONDS", "178")))
     fps: int = 30
 

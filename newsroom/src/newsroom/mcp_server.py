@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import sys
+import threading
 from datetime import date, timedelta
 from functools import cache
 from pathlib import Path
@@ -16,13 +17,14 @@ from newsroom.data.market import get_snapshot
 from newsroom.data.news import fetch_article_details, get_news
 from newsroom.models import ArchiveHit, CoveredStory, MarketSnapshot, NewsItem
 from newsroom.rag.embedder import make_embedder
-from newsroom.rag.store import VectorStore, chunk_markdown
+from newsroom.rag.store import SegmentLog, VectorStore, chunk_markdown
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO, format="[mcp] %(message)s")
 logging.getLogger("httpx").setLevel(logging.WARNING)
 log = logging.getLogger("newsroom.mcp")
 
 STYLE_GUIDE = Path(__file__).parent / "rag" / "style_guide.md"
+EXPLAINERS = Path(__file__).parent / "rag" / "explainers.md"
 
 server = MCPServer(
     "newsroom",
@@ -39,13 +41,32 @@ def settings() -> Settings:
     return Settings()
 
 
+_init_lock = threading.Lock()
+
+
 @cache
-def store() -> VectorStore:
+def _store() -> VectorStore:
     s = settings()
     vs = VectorStore(s.db_path, make_embedder(s.embedder, s.ollama_url, s.ollama_embed_model))
     chunks = chunk_markdown(STYLE_GUIDE.read_text())
     vs.add("style", [(h, "", f"{h}: {b}", {"heading": h}) for h, b in chunks])
+    entries = []
+    for heading, text in chunk_markdown(EXPLAINERS.read_text()):
+        key, _, title = (part.strip() for part in heading.partition("|"))
+        text = " ".join(text.split())
+        entries.append((key, "", f"{title}. {text}", {"key": key, "title": title, "text": text}))
+    vs.add("explainers", entries)
     return vs
+
+
+def store() -> VectorStore:
+    with _init_lock:
+        return _store()
+
+
+@cache
+def segments() -> SegmentLog:
+    return SegmentLog(store())
 
 
 @server.tool()
@@ -99,6 +120,27 @@ def record_coverage(show_date: str, stories: list[CoveredStory]) -> int:
         [(s.id, show_date, f"{s.title}. {s.summary}", {"title": s.title, "url": s.url})
          for s in stories],
     )
+
+
+@server.tool()
+def search_explainers(query: str, k: int = 3) -> list[dict]:
+    """Curated explainer entries (key, title, vetted text) most relevant to `query`."""
+    return [h.meta | {"similarity": round(h.similarity, 3)}
+            for h in store().search("explainers", query, k=k)]
+
+
+@server.tool()
+def record_segment(kind: str, key: str, show_date: str, payload: dict) -> bool:
+    """Remember a recurring segment (e.g. kind="explainer" or "quiz") used on a show."""
+    segments().record(kind, key, show_date, payload)
+    return True
+
+
+@server.tool()
+def recent_segments(kind: str, before: str, days: int = 14) -> list[dict]:
+    """Segments of `kind` recorded in the `days` before `before` (YYYY-MM-DD), newest first."""
+    end = date.fromisoformat(before)
+    return segments().recent(kind, (end - timedelta(days=days)).isoformat(), end.isoformat())
 
 
 def main() -> None:

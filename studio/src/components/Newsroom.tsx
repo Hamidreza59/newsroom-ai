@@ -20,7 +20,7 @@ const PRESENTER_TOP = 770 - 592 * PRESENTER_SCALE;
 /* ---------- camera ---------- */
 
 export type ShotName = "wide" | "desk" | "singleA" | "singleB" | "tv" | "tvSide";
-type Shot = { start: number; name: ShotName };
+type Shot = { start: number; name: ShotName; opening?: boolean };
 
 const SHOTS: Record<ShotName, { x: number; y: number; z: number }> = {
   wide: { x: 960, y: 540, z: 1 },
@@ -35,19 +35,23 @@ const MIN_SHOT = 45;
 
 export const buildShots = (episode: Episode): Shot[] => {
   const shots: Shot[] = [];
-  const push = (start: number, name: ShotName, force = false) => {
+  const push = (start: number, name: ShotName, force = false, opening = false) => {
     const last = shots[shots.length - 1];
     if (last && last.name === name) return;
     if (last && !force && start - last.start < MIN_SHOT) return;
-    shots.push({ start: Math.max(0, start), name });
+    shots.push({ start: Math.max(0, start), name, opening });
   };
   const single = (s: "a" | "b"): ShotName => (s === "a" ? "singleA" : "singleB");
 
   for (const scene of episode.scenes) {
     const end = scene.startFrame + scene.durationInFrames;
     const caps = episode.captions.filter((c) => c.startFrame >= scene.startFrame && c.startFrame < end);
+    if (scene.type === "coldopen") {
+      push(scene.startFrame, "tv", true);
+      continue;
+    }
     if (scene.type === "intro") {
-      push(0, "wide", true);
+      push(scene.startFrame, "wide", true, true);
       caps.forEach((c, i) => i > 0 && push(c.startFrame, i === caps.length - 1 ? "desk" : single(c.speaker)));
       continue;
     }
@@ -75,16 +79,21 @@ export const buildShots = (episode: Episode): Shot[] => {
   return shots;
 };
 
-export const useCamera = (episode: Episode) => {
+export const useCamera = (episode: Episode, anchorsOnly = false) => {
   const frame = useCurrentFrame();
-  const shots = useMemo(() => buildShots(episode), [episode]);
+  const shots = useMemo(() => {
+    const all = buildShots(episode);
+    return anchorsOnly
+      ? all.map((s) => (s.name === "tv" || s.name === "tvSide" ? { ...s, name: "desk" as ShotName } : s))
+      : all;
+  }, [episode, anchorsOnly]);
   let i = 0;
   while (i + 1 < shots.length && shots[i + 1].start <= frame) i++;
   const shot = shots[i] ?? { start: 0, name: "wide" as ShotName };
   const next = shots[i + 1]?.start ?? episode.durationInFrames;
   const t = interpolate(frame, [shot.start, next], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
   const base = SHOTS[shot.name];
-  const opening = shot.name === "wide" && shot.start === 0;
+  const opening = !!shot.opening;
   const z = base.z * (opening ? interpolate(t, [0, 1], [1, 1.12], { easing: Easing.inOut(Easing.sin) }) : 1 + 0.035 * t);
   const halfW = WORLD.w / 2 / z;
   const halfH = WORLD.h / 2 / z;

@@ -46,10 +46,28 @@ def cmd_run(args: argparse.Namespace) -> None:
         settings.llm_provider = args.llm
     if args.tts:
         settings.tts_provider = args.tts
+    if args.review:
+        settings.human_review = True
     show_date = date.fromisoformat(args.date) if args.date else _today()
-    asyncio.run(produce_episode(settings, show_date, record=not args.no_record))
+    asyncio.run(produce_episode(settings, show_date, record=not args.no_record, approve=ask_approval))
     if args.render:
         render(show_date, settings)
+
+
+def ask_approval(payload: dict) -> bool:
+    """Human-in-the-loop gate: shown only when guardrails had to rewrite on-air copy."""
+    print(f"\nReview needed: {payload['reason']}\n  events: {payload['events']}\n"
+          f"  script: {payload['script']}")
+    if not sys.stdin.isatty():
+        print("  no terminal attached; leaving the episode unapproved")
+        return False
+    return input("Approve this episode for publishing? [y/N] ").strip().lower() == "y"
+
+
+def cmd_graph(_: argparse.Namespace) -> None:
+    from newsroom.pipeline import mermaid
+
+    print(mermaid())
 
 
 def cmd_render(args: argparse.Namespace) -> None:
@@ -89,6 +107,8 @@ def main() -> None:
     run.add_argument("--tts", choices=["kokoro", "say", "silent"])
     run.add_argument("--render", action="store_true", help="also render the video with Remotion")
     run.add_argument("--no-record", action="store_true", help="don't save stories to the archive")
+    run.add_argument("--review", action="store_true",
+                     help="pause for human approval when guardrails rewrite on-air copy")
     run.set_defaults(func=cmd_run)
 
     rend = sub.add_parser("render", help="render an already-produced episode to MP4")
@@ -98,6 +118,8 @@ def main() -> None:
     sub.add_parser("setup", help="download the free Kokoro voice models").set_defaults(
         func=cmd_setup)
     sub.add_parser("tools", help="list the MCP server's tools").set_defaults(func=cmd_tools)
+    sub.add_parser("graph", help="print the LangGraph orchestration as Mermaid").set_defaults(
+        func=cmd_graph)
 
     args = parser.parse_args()
     _setup_logging(args.verbose)

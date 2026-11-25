@@ -23,4 +23,8 @@ const remotion = (args) => {
 remotion(["render", "src/index.ts", "DailyShow", resolve(dir, "video.mp4"), "--codec=h264", "--crf=18",
   "--audio-bitrate=192k"]);
 remotion(["still", "src/index.ts", "Thumbnail", resolve(dir, "thumbnail.png")]);
-console.log(`Done: ${resolve(dir, "video.mp4")} and thumbnail.png`);
+if (episode.short) {
+  remotion(["render", "src/index.ts", "Short", resolve(dir, "short.mp4"), "--codec=h264", "--crf=20",
+    "--audio-bitrate=192k"]);
+}
+console.log(`Done: ${resolve(dir, "video.mp4")}, thumbnail.png${episode.short ? " and short.mp4" : ""}`);

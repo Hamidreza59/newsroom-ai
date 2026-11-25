@@ -20,6 +20,8 @@ from newsroom.models import (
     MarketSnapshot,
     Quote,
     Scene,
+    ShortClip,
+    ShortSpec,
     ShowScript,
     YouTubeMeta,
 )
@@ -35,6 +37,7 @@ TURN_GAP_S = 0.35
 SCENE_GAP_S = 0.55
 OUTRO_TAIL_S = 2.5
 MARKET_MIN_S = 12.0
+SHORT_MAX_S = 58
 
 
 class TooLong(Exception):
@@ -119,7 +122,13 @@ class Producer:
                                     narration=self._transcript(lines), **kw), lines)
 
         n = len(script.stories)
-        specs = [
+        specs = []
+        if script.cold_open:
+            top = script.stories[0] if script.stories else None
+            specs.append(scene("coldopen", script.cold_open,
+                               headline=top.headline if top else self.settings.show_name,
+                               category=top.category if top else None))
+        specs += [
             scene("intro", script.intro, headline=self.settings.show_name),
             scene("market", script.market.lines, headline=script.market.headline,
                   bullets=script.market.bullets),
@@ -128,6 +137,13 @@ class Producer:
             specs.append(scene("news", s.lines, headline=s.headline, bullets=s.points,
                                source=s.source, category=s.category, follow_up=s.follow_up,
                                index=i, total=n))
+            if script.explainer and i == min(2, n):
+                ex = script.explainer
+                specs.append(scene("explainer", ex.lines, headline=ex.title, bullets=ex.steps))
+        if script.quiz:
+            q = script.quiz
+            specs.append(scene("quiz", q.reveal_lines + q.lines, headline=q.question,
+                               options=q.options, reveal=q.reveal))
         outro = list(script.outro)
         closer = outro[-1].speaker if outro else "a"
         outro.append(Line(speaker=closer, text=DISCLAIMER))
@@ -138,6 +154,10 @@ class Producer:
     def _alert_label(scene: Scene) -> str:
         if scene.type == "market":
             return "Market watch"
+        if scene.type == "explainer":
+            return "AI in 30 seconds"
+        if scene.type == "quiz":
+            return "Quiz time"
         if scene.type != "news":
             return ""
         if scene.follow_up:
@@ -213,9 +233,29 @@ class Producer:
             youtube=self.youtube_meta(script, snap, scenes, show_date),
             disclaimer=DISCLAIMER,
             anchors=[Anchor(id=k, name=v) for k, v in self.names.items()],
+            short=self.short_spec(script, scenes, fps),
             mouths={} if silent else speaker_mouths(
                 mouth_envelope(self._audio, rate, fps, total_frames), captions),
         )
+
+    @staticmethod
+    def short_spec(script: ShowScript, scenes: list[Scene], fps: int) -> ShortSpec | None:
+        """A vertical Short: the cold open followed by the top story, capped at 58 seconds."""
+        cold = next((s for s in scenes if s.type == "coldopen"), None)
+        top = next((s for s in scenes if s.type == "news"), None)
+        if not top:
+            return None
+        limit = SHORT_MAX_S * fps
+        clips = []
+        if cold:
+            clips.append(ShortClip(start_frame=cold.start_frame,
+                                   end_frame=cold.start_frame + cold.duration_in_frames))
+        used = sum(c.end_frame - c.start_frame for c in clips)
+        end = min(top.start_frame + top.duration_in_frames, top.start_frame + limit - used)
+        clips.append(ShortClip(start_frame=top.start_frame, end_frame=end))
+        total = sum(c.end_frame - c.start_frame for c in clips)
+        title = f"{script.stories[0].headline} #Shorts"[:100]
+        return ShortSpec(title=title, clips=clips, duration_in_frames=total)
 
     def youtube_meta(self, script: ShowScript, snap: MarketSnapshot, scenes: list[Scene],
                      show_date: date) -> YouTubeMeta:
@@ -228,9 +268,13 @@ class Producer:
 
         chapters = []
         for sc in scenes:
-            label = {"intro": "Intro", "outro": "Wrap-up"}.get(sc.type) or (
-                f"Markets: {sc.headline}" if sc.type == "market" else sc.headline)
-            chapters.append(f"{_timestamp(sc.start_frame / fps)} {label}")
+            if sc.type == "coldopen":
+                continue
+            label = {"intro": "Intro", "outro": "Wrap-up", "quiz": "Daily quiz"}.get(sc.type) or (
+                f"Markets: {sc.headline}" if sc.type == "market" else
+                f"AI in 30 seconds: {sc.headline}" if sc.type == "explainer" else sc.headline)
+            start = 0 if not chapters else sc.start_frame / fps
+            chapters.append(f"{_timestamp(start)} {label}")
 
         a, b = self.names["a"], self.names["b"]
         sources = "\n".join(f"• {s.headline} ({s.source}): {s.url}" for s in script.stories)
@@ -258,6 +302,12 @@ class Producer:
         (out_dir / "episode.json").write_text(episode.model_dump_json(by_alias=True, indent=2))
         (out_dir / "youtube.json").write_text(
             json.dumps(episode.youtube.model_dump(), indent=2, ensure_ascii=False))
+        if episode.short:
+            (out_dir / "short.json").write_text(json.dumps({
+                "title": episode.short.title,
+                "description": f"{episode.short.title}\nFull episode of {episode.show_name} on the "
+                               f"channel.\n{DISCLAIMER}\n#AI #StockMarket #TechNews",
+            }, indent=2, ensure_ascii=False))
         (out_dir / "captions.srt").write_text("\n".join(
             f"{i}\n{_srt_time(c.start_frame, episode.fps)} --> "
             f"{_srt_time(c.end_frame, episode.fps)}\n{self.names[c.speaker]}: {c.text}\n"
@@ -266,9 +316,16 @@ class Producer:
         def block(lines: list[Line]) -> list[str]:
             return [f"**{self.names[ln.speaker]}:** {ln.text}" for ln in lines]
 
-        md = [f"# {episode.show_name} — {episode.date}", "", "## Intro", *block(script.intro), "",
+        md = [f"# {episode.show_name} — {episode.date}", "", "## Cold open", *block(script.cold_open), "",
+              "## Intro", *block(script.intro), "",
               f"## Markets — {script.market.headline}", *block(script.market.lines), ""]
         for s in script.stories:
             md += [f"## {s.headline} ({s.source})", *block(s.lines), f"<{s.url}>", ""]
+        if script.explainer:
+            md += [f"## AI in 30 seconds — {script.explainer.title}", *block(script.explainer.lines), ""]
+        if script.quiz:
+            q = script.quiz
+            md += [f"## Quiz — {q.question}", *block(q.reveal_lines + q.lines),
+                   f"_Answer: {'ABC'[q.answer_index]}, {q.options[q.answer_index]}_", ""]
         md += ["## Outro", *block(script.outro), "", f"_{DISCLAIMER}_"]
         (out_dir / "script.md").write_text("\n".join(md))

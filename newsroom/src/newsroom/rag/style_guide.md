@@ -34,3 +34,9 @@ fragments under 70 characters that a viewer can read in two seconds.
 ## Sign-off
 End with a short friendly sign-off that invites viewers to subscribe for tomorrow's update. The
 legal disclaimer is added automatically; do not write your own.
+
+## Health and biotech
+Report health and biotech news carefully. Say what stage a treatment is at, for example an early
+trial or an approved drug, using only what the source states. Never say something cures a disease,
+never call anything a miracle, and never tell viewers to take, stop or change any treatment. Early
+results are early: say so when the source does.

@@ -88,3 +88,11 @@ def test_quiz_answer_must_be_stated_in_the_story():
     assert "not stated" in QuizMaster.validate(bad, materials)
     market = QuizMaster.market_quiz(sample_snapshot())
     assert len(market.options) == 3 and 0 <= market.answer_index < 3
+
+
+def test_medical_advice_and_cure_claims_are_rejected():
+    from newsroom.agents.editor import check_language
+
+    assert check_language("This miracle drug cures cancer.")
+    assert check_language("You should stop taking your medication.")
+    assert check_language("The drug met its goal in a phase 2 trial.") == []

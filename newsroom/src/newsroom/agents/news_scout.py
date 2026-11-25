@@ -7,7 +7,7 @@ from newsroom.models import NewsItem, StoryPicks
 
 REPEAT_THRESHOLD = 0.8
 FOLLOW_UP_THRESHOLD = 0.55
-RSS_SOURCES = set(RSS_FEEDS)
+RSS_SOURCES = {name for name, _ in RSS_FEEDS}
 
 
 class NewsScout(Agent):
@@ -43,7 +43,8 @@ class NewsScout(Agent):
             f"tech-curious audience. Choose the {count} most newsworthy stories. Prefer real news "
             "(launches, research results, regulation, business moves) over opinion pieces, guides "
             "and listicles. Never pick two stories about the same event or company. Include at "
-            "least two AI stories. Return their ids, most important first. "
+            "least one AI story and, when a solid one exists, one Biotech story. Return their "
+            "ids, most important first. "
             + UNTRUSTED_NOTICE
         )
         picks = await self.ask(
@@ -57,7 +58,8 @@ class NewsScout(Agent):
                 break
             if extra not in chosen and not self._overlaps(extra, chosen):
                 chosen.append(extra)
-        chosen = [await self.enrich(c) for c in chosen[:count]]
+        chosen = self.ensure_mix(chosen[:count], pool)
+        chosen = [await self.enrich(c) for c in chosen]
         self.log.info("picked: %s", "; ".join(c.title[:50] for c in chosen))
         return chosen
 
@@ -86,6 +88,17 @@ class NewsScout(Agent):
         if site and 2 <= len(site) <= 40 and item.source not in RSS_SOURCES:
             update["source"] = site
         return item.model_copy(update=update) if update else item
+
+    def ensure_mix(self, chosen: list[NewsItem], pool: list[NewsItem]) -> list[NewsItem]:
+        """Editorial balance: keep one strong biotech story in the rundown when one is available."""
+        if not chosen or any(c.category == "Biotech" for c in chosen):
+            return chosen
+        best = next((p for p in pool if p.category == "Biotech" and p not in chosen
+                     and not self._overlaps(p, chosen)), None)
+        if best and best.score >= 0.6 * chosen[-1].score:
+            self.log.info("balancing rundown with biotech story: %s", best.title[:60])
+            return [*chosen[:-1], best]
+        return chosen
 
     @staticmethod
     def _overlaps(item: NewsItem, others: list[NewsItem]) -> bool:

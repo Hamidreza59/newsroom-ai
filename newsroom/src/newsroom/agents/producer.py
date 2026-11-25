@@ -162,7 +162,7 @@ class Producer:
             return ""
         if scene.follow_up:
             return "Follow-up"
-        return "AI alert" if scene.category == "AI" else "Tech alert"
+        return {"AI": "AI alert", "Biotech": "Biotech alert"}.get(scene.category or "", "Tech alert")
 
     def build(self, script: ShowScript, snap: MarketSnapshot, show_date: date) -> Episode:
         fps, rate = self.settings.fps, self.tts.sample_rate

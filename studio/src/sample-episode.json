@@ -4,7 +4,7 @@
   "fps": 30,
   "width": 1920,
   "height": 1080,
-  "durationInFrames": 5152,
+  "durationInFrames": 4990,
   "audioFile": null,
   "market": {
     "asOf": "2026-11-24",
@@ -311,19 +311,19 @@
         "series": []
       },
       {
+        "symbol": "REGN",
+        "name": "Regeneron",
+        "price": 648.03,
+        "change": 18.49,
+        "changePct": 2.94,
+        "series": []
+      },
+      {
         "symbol": "TSLA",
         "name": "Tesla",
         "price": 333.57,
         "change": 8.74,
         "changePct": 2.69,
-        "series": []
-      },
-      {
-        "symbol": "NVDA",
-        "name": "Nvidia",
-        "price": 154.5,
-        "change": 3.46,
-        "changePct": 2.29,
         "series": []
       }
     ],
@@ -337,19 +337,19 @@
         "series": []
       },
       {
+        "symbol": "VRTX",
+        "name": "Vertex",
+        "price": 428.45,
+        "change": -6.56,
+        "changePct": -1.51,
+        "series": []
+      },
+      {
         "symbol": "AMD",
         "name": "AMD",
         "price": 146.85,
         "change": -0.99,
         "changePct": -0.67,
-        "series": []
-      },
-      {
-        "symbol": "ORCL",
-        "name": "Oracle",
-        "price": 242.2,
-        "change": -0.15,
-        "changePct": -0.06,
         "series": []
       }
     ],
@@ -475,6 +475,38 @@
       "change": 0.78,
       "changePct": 0.55,
       "series": []
+    },
+    {
+      "symbol": "MRNA",
+      "name": "Moderna",
+      "price": 28.83,
+      "change": 0.65,
+      "changePct": 2.31,
+      "series": []
+    },
+    {
+      "symbol": "VRTX",
+      "name": "Vertex",
+      "price": 428.45,
+      "change": -6.56,
+      "changePct": -1.51,
+      "series": []
+    },
+    {
+      "symbol": "REGN",
+      "name": "Regeneron",
+      "price": 648.03,
+      "change": 18.49,
+      "changePct": 2.94,
+      "series": []
+    },
+    {
+      "symbol": "RXRX",
+      "name": "Recursion",
+      "price": 6.56,
+      "change": -0.02,
+      "changePct": -0.3,
+      "series": []
     }
   ],
   "scenes": [
@@ -516,7 +548,7 @@
       "type": "market",
       "startFrame": 628,
       "durationInFrames": 646,
-      "narration": "Maya: Let's start with the markets. Leo? Leo: It was a strong day on Wall Street. S&P 500 rose 0.9 percent, Nasdaq fell 1.5 percent, Dow Jones rose 0.5 percent. Leo: In tech, Alphabet rose 3.3 percent and Tesla rose 2.7 percent. On the downside, Apple fell 6.4 percent.",
+      "narration": "Maya: Let's start with the markets. Leo? Leo: It was a strong day on Wall Street. S&P 500 rose 0.9 percent, Nasdaq fell 1.5 percent, Dow Jones rose 0.5 percent. Leo: In tech, Alphabet rose 3.3 percent and Regeneron rose 2.9 percent. On the downside, Apple fell 6.4 percent.",
       "headline": "S&P 500 up 0.9%",
       "bullets": [
         "S&P 500 +0.9%",
@@ -540,7 +572,7 @@
       "narration": "Maya: Sample Wire reports: Open-weight model tops coding benchmark, rivaling closed systems. A new open-weight language model matched leading proprietary systems on a widely used coding benchmark, while running on a single high-end GPU. Leo: That's one to watch.",
       "headline": "Open-weight model tops coding benchmark, rivaling close",
       "bullets": [
-        "A new open-weight language model matched leading proprietary systems o",
+        "A new open-weight language model matched leading proprietary systems on a…",
         "Source: Sample Wire",
         "AI news"
       ],
@@ -561,7 +593,7 @@
       "narration": "Leo: Sample Tech Daily reports: Chipmaker unveils inference accelerator aimed at data centers. The accelerator promises lower cost per token for serving large models and ships to cloud providers next quarter. Maya: That's one to watch.",
       "headline": "Chipmaker unveils inference accelerator aimed at data c",
       "bullets": [
-        "The accelerator promises lower cost per token for serving large models",
+        "The accelerator promises lower cost per token for serving large models…",
         "Source: Sample Tech Daily",
         "AI news"
       ],
@@ -578,13 +610,13 @@
     {
       "type": "explainer",
       "startFrame": 2277,
-      "durationInFrames": 915,
-      "narration": "Maya: Time for A.I. in 30 seconds. What are open-weight models? Leo: An open-weight model is an AI model whose trained parameters, its weights, are published so anyone\ncan download and run it on their own hardware. That lowers costs and lets companies keep data\nprivate, but it also means the original developer cannot control how the model is used. Maya: Closed\nmodels are only available through the company's own apps or services.",
-      "headline": "What are open-weight models?",
+      "durationInFrames": 777,
+      "narration": "Maya: Time for A.I. in 30 seconds. What does FDA approval mean? Leo: The U.S. Food and Drug Administration reviews the evidence from clinical trials to decide whether a medicine's benefits outweigh its risks for a specific use. Maya: Approval lets a company sell the drug in the United States for that use, and the agency keeps monitoring safety after approval.",
+      "headline": "What does FDA approval mean?",
       "bullets": [
-        "An open-weight model is an AI model whose trained…",
-        "That lowers costs and lets companies keep data\nprivate,…",
-        "Closed\nmodels are only available through the company's…"
+        "The U.S.",
+        "Food and Drug Administration reviews the evidence from…",
+        "Approval lets a company sell the drug in the United…"
       ],
       "source": "",
       "category": null,
@@ -598,12 +630,12 @@
     },
     {
       "type": "news",
-      "startFrame": 3192,
+      "startFrame": 3054,
       "durationInFrames": 461,
       "narration": "Maya: Sample Policy Review reports: Regulators propose new rules for app store payments. The draft rules would let developers steer customers to outside payment options and cap commission fees. Leo: That's one to watch.",
       "headline": "Regulators propose new rules for app store payments",
       "bullets": [
-        "The draft rules would let developers steer customers to outside paymen",
+        "The draft rules would let developers steer customers to outside payment…",
         "Source: Sample Policy Review",
         "Tech news"
       ],
@@ -619,30 +651,30 @@
     },
     {
       "type": "news",
-      "startFrame": 3653,
-      "durationInFrames": 518,
-      "narration": "Leo: Sample Health Tech reports: Hospital network pilots AI assistant for clinical notes. Doctors in the pilot spent less time on paperwork, though the network says every note is still reviewed by a clinician. Maya: That's one to watch.",
-      "headline": "Hospital network pilots AI assistant for clinical notes",
+      "startFrame": 3515,
+      "durationInFrames": 472,
+      "narration": "Leo: Sample Bio Journal reports: AI-designed protein enters early clinical trial. Researchers say the protein, designed with a generative model, will be tested for safety in a small first-in-human study. Maya: That's one to watch.",
+      "headline": "AI-designed protein enters early clinical trial",
       "bullets": [
-        "Doctors in the pilot spent less time on paperwork, though the network",
-        "Source: Sample Health Tech",
-        "AI news"
+        "Researchers say the protein, designed with a generative model, will be…",
+        "Source: Sample Bio Journal",
+        "Biotech news"
       ],
-      "source": "Sample Health Tech",
-      "category": "AI",
+      "source": "Sample Bio Journal",
+      "category": "Biotech",
       "followUp": false,
       "index": 4,
       "total": 4,
-      "alert": "AI alert",
+      "alert": "Biotech alert",
       "alertFrames": 52,
       "options": [],
       "reveal": ""
     },
     {
       "type": "quiz",
-      "startFrame": 4171,
+      "startFrame": 3987,
       "durationInFrames": 467,
-      "narration": "Leo: Quiz time! Which stock on our watchlist moved the most today? Maya: Is it A, Apple; B, AMD; C, Oracle? Tell us in the comments, and we'll reveal the answer on tomorrow's show.",
+      "narration": "Leo: Quiz time! Which stock on our watchlist moved the most today? Maya: Is it A, Apple; B, Microsoft; C, Oracle? Tell us in the comments, and we'll reveal the answer on tomorrow's show.",
       "headline": "Which stock on our watchlist moved the most today?",
       "bullets": [],
       "source": "",
@@ -654,16 +686,16 @@
       "alertFrames": 52,
       "options": [
         "Apple",
-        "AMD",
+        "Microsoft",
         "Oracle"
       ],
       "reveal": ""
     },
     {
       "type": "outro",
-      "startFrame": 4638,
-      "durationInFrames": 514,
-      "narration": "Maya: That's Bits & Bulls for today. Leo: Subscribe so you don't miss tomorrow's update. See you then! Leo: This show is for information and entertainment only and is not financial advice. Do your own research before investing.",
+      "startFrame": 4454,
+      "durationInFrames": 536,
+      "narration": "Maya: That's Bits & Bulls for today. Leo: Subscribe so you don't miss tomorrow's update. See you then! Leo: This show is for information and entertainment only and is not financial or medical advice. Do your own research before investing.",
       "headline": "",
       "bullets": [],
       "source": "",
@@ -745,7 +777,7 @@
       "endFrame": 1032
     },
     {
-      "text": "In tech, Alphabet rose 3.3 percent and Tesla rose 2.7 percent.",
+      "text": "In tech, Alphabet rose 3.3 percent and Regeneron rose 2.9 percent.",
       "speaker": "b",
       "startFrame": 1038,
       "endFrame": 1165
@@ -799,123 +831,123 @@
       "endFrame": 2398
     },
     {
-      "text": "What are open-weight models?",
+      "text": "What does FDA approval mean?",
       "speaker": "a",
       "startFrame": 2404,
-      "endFrame": 2451
+      "endFrame": 2462
     },
     {
-      "text": "An open-weight model is an AI model whose trained parameters, its weights, are published so anyone\ncan download and run it on their own hardware.",
+      "text": "The U.S.",
       "speaker": "b",
-      "startFrame": 2461,
-      "endFrame": 2749
+      "startFrame": 2473,
+      "endFrame": 2496
     },
     {
-      "text": "That lowers costs and lets companies keep data\nprivate, but it also means the original developer cannot control how the model is used.",
+      "text": "Food and Drug Administration reviews the evidence from clinical trials to decide whether a medicine's benefits outweigh its risks for a specific use.",
       "speaker": "b",
-      "startFrame": 2755,
-      "endFrame": 3021
+      "startFrame": 2502,
+      "endFrame": 2767
     },
     {
-      "text": "Closed\nmodels are only available through the company's own apps or services.",
+      "text": "Approval lets a company sell the drug in the United States for that use, and the agency keeps monitoring safety after approval.",
       "speaker": "a",
-      "startFrame": 3031,
-      "endFrame": 3170
+      "startFrame": 2778,
+      "endFrame": 3031
     },
     {
       "text": "Sample Policy Review reports: Regulators propose new rules for app store payments.",
       "speaker": "a",
-      "startFrame": 3245,
-      "endFrame": 3383
+      "startFrame": 3106,
+      "endFrame": 3245
     },
     {
       "text": "The draft rules would let developers steer customers to outside payment options and cap commission fees.",
       "speaker": "a",
-      "startFrame": 3389,
-      "endFrame": 3574
+      "startFrame": 3251,
+      "endFrame": 3435
     },
     {
       "text": "That's one to watch.",
       "speaker": "b",
-      "startFrame": 3584,
-      "endFrame": 3631
+      "startFrame": 3446,
+      "endFrame": 3492
     },
     {
-      "text": "Sample Health Tech reports: Hospital network pilots AI assistant for clinical notes.",
+      "text": "Sample Bio Journal reports: AI-designed protein enters early clinical trial.",
       "speaker": "b",
-      "startFrame": 3706,
-      "endFrame": 3844
+      "startFrame": 3567,
+      "endFrame": 3682
     },
     {
-      "text": "Doctors in the pilot spent less time on paperwork, though the network says every note is still reviewed by a clinician.",
+      "text": "Researchers say the protein, designed with a generative model, will be tested for safety in a small first-in-human study.",
       "speaker": "b",
-      "startFrame": 3850,
-      "endFrame": 4092
+      "startFrame": 3688,
+      "endFrame": 3908
     },
     {
       "text": "That's one to watch.",
       "speaker": "a",
-      "startFrame": 4103,
-      "endFrame": 4149
+      "startFrame": 3918,
+      "endFrame": 3964
     },
     {
       "text": "Quiz time!",
       "speaker": "b",
-      "startFrame": 4224,
-      "endFrame": 4247
+      "startFrame": 4039,
+      "endFrame": 4062
     },
     {
       "text": "Which stock on our watchlist moved the most today?",
       "speaker": "b",
-      "startFrame": 4253,
-      "endFrame": 4357
+      "startFrame": 4068,
+      "endFrame": 4172
     },
     {
-      "text": "Is it A, Apple; B, AMD; C, Oracle?",
+      "text": "Is it A, Apple; B, Microsoft; C, Oracle?",
       "speaker": "a",
-      "startFrame": 4367,
-      "endFrame": 4460
+      "startFrame": 4183,
+      "endFrame": 4275
     },
     {
       "text": "Tell us in the comments, and we'll reveal the answer on tomorrow's show.",
       "speaker": "a",
-      "startFrame": 4466,
-      "endFrame": 4616
+      "startFrame": 4281,
+      "endFrame": 4431
     },
     {
       "text": "That's Bits & Bulls for today.",
       "speaker": "a",
-      "startFrame": 4638,
-      "endFrame": 4707
+      "startFrame": 4454,
+      "endFrame": 4523
     },
     {
       "text": "Subscribe so you don't miss tomorrow's update.",
       "speaker": "b",
-      "startFrame": 4718,
-      "endFrame": 4799
+      "startFrame": 4533,
+      "endFrame": 4614
     },
     {
       "text": "See you then!",
       "speaker": "b",
-      "startFrame": 4805,
-      "endFrame": 4839
+      "startFrame": 4620,
+      "endFrame": 4655
     },
     {
-      "text": "This show is for information and entertainment only and is not financial advice.",
+      "text": "This show is for information and entertainment only and is not financial or medical advice.",
       "speaker": "b",
-      "startFrame": 4845,
-      "endFrame": 4995
+      "startFrame": 4661,
+      "endFrame": 4834
     },
     {
       "text": "Do your own research before investing.",
       "speaker": "b",
-      "startFrame": 5001,
-      "endFrame": 5071
+      "startFrame": 4840,
+      "endFrame": 4909
     }
   ],
   "youtube": {
     "title": "S&P 500 up 0.9% · Open-weight model tops coding benchmark, rivaling close | Bits & Bulls Nov 24",
-    "description": "Bits & Bulls: your daily three-minute briefing on the stock market and the biggest AI and tech stories, for Tuesday, November 24, 2026, with Maya and Leo.\n\nChapters\n0:00 Intro\n0:20 Markets: S&P 500 up 0.9%\n0:42 Open-weight model tops coding benchmark, rivaling close\n0:59 Chipmaker unveils inference accelerator aimed at data c\n1:15 AI in 30 seconds: What are open-weight models?\n1:46 Regulators propose new rules for app store payments\n2:01 Hospital network pilots AI assistant for clinical notes\n2:19 Daily quiz\n2:34 Wrap-up\n\nSources\n• Open-weight model tops coding benchmark, rivaling close (Sample Wire): https://example.com/sample/0\n• Chipmaker unveils inference accelerator aimed at data c (Sample Tech Daily): https://example.com/sample/1\n• Regulators propose new rules for app store payments (Sample Policy Review): https://example.com/sample/2\n• Hospital network pilots AI assistant for clinical notes (Sample Health Tech): https://example.com/sample/3\n\nMarket data reflects the 2026-11-24 session close.\nThis show is for information and entertainment only and is not financial advice. Do your own research before investing.\nMaya and Leo are AI-generated characters. Script, voices and animation are produced with AI tools and automated fact checks.\n\n#AI #StockMarket #TechNews",
+    "description": "Bits & Bulls: your daily three-minute briefing on the stock market and the biggest AI and tech stories, for Tuesday, November 24, 2026, with Maya and Leo.\n\nChapters\n0:00 Intro\n0:20 Markets: S&P 500 up 0.9%\n0:42 Open-weight model tops coding benchmark, rivaling close\n0:59 Chipmaker unveils inference accelerator aimed at data c\n1:15 AI in 30 seconds: What does FDA approval mean?\n1:41 Regulators propose new rules for app store payments\n1:57 AI-designed protein enters early clinical trial\n2:12 Daily quiz\n2:28 Wrap-up\n\nSources\n• Open-weight model tops coding benchmark, rivaling close (Sample Wire): https://example.com/sample/0\n• Chipmaker unveils inference accelerator aimed at data c (Sample Tech Daily): https://example.com/sample/1\n• Regulators propose new rules for app store payments (Sample Policy Review): https://example.com/sample/2\n• AI-designed protein enters early clinical trial (Sample Bio Journal): https://example.com/sample/5\n\nMarket data reflects the 2026-11-24 session close.\nThis show is for information and entertainment only and is not financial or medical advice. Do your own research before investing.\nMaya and Leo are AI-generated characters. Script, voices and animation are produced with AI tools and automated fact checks.\n\n#AI #StockMarket #TechNews",
     "tags": [
       "AI news",
       "stock market today",
@@ -926,11 +958,11 @@
       "daily market update",
       "Bits & Bulls",
       "Alphabet",
-      "Tesla",
+      "Regeneron",
       "Apple"
     ]
   },
-  "disclaimer": "This show is for information and entertainment only and is not financial advice. Do your own research before investing.",
+  "disclaimer": "This show is for information and entertainment only and is not financial or medical advice. Do your own research before investing.",
   "anchors": [
     {
       "id": "a",

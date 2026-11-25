@@ -7,7 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 
 DISCLAIMER = (
-    "This show is for information and entertainment only and is not financial advice. "
+    "This show is for information and entertainment only and is not financial or medical advice. "
     "Do your own research before investing."
 )
 
@@ -26,6 +26,10 @@ WATCHLIST = {
     "TSM": "TSMC",
     "ORCL": "Oracle",
     "PLTR": "Palantir",
+    "MRNA": "Moderna",
+    "VRTX": "Vertex",
+    "REGN": "Regeneron",
+    "RXRX": "Recursion",
 }
 
 

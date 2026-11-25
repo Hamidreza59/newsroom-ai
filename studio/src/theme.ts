@@ -21,6 +21,7 @@ export const color = {
   gold: "#FFC53D",
   suit: "#1E2B5C",
   tie: "#FF5C70",
+  bio: "#F472B6",
 } as const;
 
 export const layout = {
@@ -35,7 +36,8 @@ export const layout = {
 
 export const anchorColor = (id: "a" | "b") => (id === "a" ? color.ai : color.gold);
 
-export const categoryColor = (c: "AI" | "Tech" | null) => (c === "AI" ? color.ai : color.tech);
+export const categoryColor = (c: "AI" | "Tech" | "Biotech" | null) =>
+  c === "AI" ? color.ai : c === "Biotech" ? color.bio : color.tech;
 
 const num = new Intl.NumberFormat("en-US", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 const whole = new Intl.NumberFormat("en-US", { maximumFractionDigits: 0 });

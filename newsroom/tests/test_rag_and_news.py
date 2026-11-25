@@ -34,6 +34,19 @@ def test_categorize_and_source_names():
     assert categorize("OpenAI ships a new model") == "AI"
     assert categorize("Apple unveils a new iPhone") == "Tech"
     assert categorize("Local bakery wins award") is None
+    assert categorize("AI-designed antibody enters clinical trial") == "Biotech"
+    assert categorize("FDA approves new gene therapy") == "Biotech"
     assert source_from_domain("nvidianews.nvidia.com") == "Nvidia"
     assert source_from_domain("www.bbc.co.uk") == "bbc"
     assert source_from_domain("z.ai") == "z.ai"
+
+
+def test_scout_balances_rundown_with_biotech():
+    from newsroom.agents.news_scout import NewsScout
+    from newsroom.llm import MockProvider
+
+    items = sample_news()
+    scout = NewsScout(MockProvider(), None, "Show")
+    tech_only = [i for i in items if i.category != "Biotech"][:4]
+    mixed = scout.ensure_mix(tech_only, items)
+    assert any(i.category == "Biotech" for i in mixed) and len(mixed) == 4

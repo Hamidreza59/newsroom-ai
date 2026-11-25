@@ -2,7 +2,7 @@
 
 # 📈 newsroom-ai
 
-### A multi-agent AI newsroom that produces a daily animated markets & AI-news show
+### A multi-agent AI newsroom that produces a daily animated markets, AI, tech & biotech news show
 
 **Live market data → AI/tech news → fact-checked two-anchor script → voices → broadcast-style video.**<br/>
 One command, under three minutes of video, ready for YouTube.
@@ -51,8 +51,9 @@ One command, under three minutes of video, ready for YouTube.
 Every day, `newsroom-ai` produces an episode of **Bits & Bulls**, a short news show hosted by two
 original animated co-anchors, **Maya** and **Leo**:
 
-1. **Gathers** the closing numbers for the S&P 500, Nasdaq, Dow and an AI/big-tech watchlist, plus
-   the last 30 hours of AI and technology news from RSS feeds and Hacker News.
+1. **Gathers** the closing numbers for the S&P 500, Nasdaq, Dow and an AI, big-tech and biotech
+   watchlist, plus the last 30 hours of AI, technology and biotech news from RSS feeds (including
+   STAT, Nature Biotechnology, BioPharma Dive and GEN) and Hacker News.
 2. **Edits** like a newsroom: eight cooperating agents, orchestrated with **LangGraph**, pick the
    stories, write a natural two-person dialogue, add a cold-open hook, an "AI in 30 seconds"
    explainer and a daily quiz, fact-check every number and name, and enforce a strict time budget.
@@ -80,6 +81,7 @@ config change, not a rewrite.
 | 🎙️ **Two-anchor dialogue** | Distinct voices, hand-offs and reactions, speaker-tagged captions |
 | 🎬 **Broadcast look** | Newsroom set, big TV on a stand, camera cuts, news-alert bumpers, ticker, lower thirds |
 | 🎭 **Expressive anchors** | Script-driven expressions, emphasis gestures, glances at notes, natural posture shifts |
+| 🧬 **Biotech desk** | Biotech feeds and category, biotech stocks, a balanced rundown, and a medical-claims guardrail |
 | 🎯 **Engagement segments** | Cold-open hook, "AI in 30 seconds" explainer from a vetted knowledge base, daily quiz with tomorrow's reveal |
 | 📱 **Auto Shorts** | A vertical 1080×1920 cut of the hook and top story, ≤ 58 s |
 | 👔 **Daily wardrobe** | Each anchor gets a different seeded outfit every episode |
@@ -215,7 +217,8 @@ A small SQLite-backed vector store (`rag/store.py`) holds two collections:
 - **Style guide:** `rag/style_guide.md` is chunked by section, and the most relevant rules (tone,
   number formatting, attribution, length) are retrieved into each writing prompt.
 - **Explainer knowledge base:** `rag/explainers.md` holds vetted plain-language entries (GPUs,
-  tokens, AI agents, indices, zero-days…). The Explainer retrieves the entry closest to today's
+  tokens, AI agents, indices, zero-days, protein folding, AI protein design, CRISPR, mRNA, clinical
+  trials, FDA approval…). The Explainer retrieves the entry closest to today's
   stories, skips topics used in the last three weeks, and may only use facts from that entry.
 
 Embeddings default to an offline feature-hashing model for zero setup. Set `EMBEDDER=ollama` to use
@@ -231,8 +234,9 @@ the model:
 - **Grounding:** proper nouns and numbers in a story that don't appear in the source title or
   description are flagged as possible hallucinations and sent back for rewrite.
 - **Attribution:** every story must name its outlet on air.
-- **Compliance:** investment-advice phrasing ("you should buy", "price target") and hype words are
-  rejected; a not-financial-advice disclaimer is always appended by code, never by the model.
+- **Compliance:** investment-advice phrasing ("you should buy", "price target"), medical advice and
+  cure claims ("miracle drug", "you should stop taking") and hype words are rejected; a
+  not-financial-or-medical-advice disclaimer is always appended by code, never by the model.
 - **Fallback:** copy that still fails after two revisions is replaced with text built directly from
   the source.
 
@@ -399,8 +403,9 @@ This project is built to make trustworthy content. Before monetizing a channel:
   it applies.
 - **Original value:** platforms limit monetization of mass-produced content. Human review,
   commentary and editorial choices make a channel more valuable and more durable.
-- **Not financial advice:** the disclaimer is spoken and shown on every episode and cannot be
-  removed by the model.
+- **Not financial or medical advice:** the disclaimer is spoken and shown on every episode and
+  cannot be removed by the model. Health stories report the stage of the evidence and never make
+  cure claims.
 
 ---
 

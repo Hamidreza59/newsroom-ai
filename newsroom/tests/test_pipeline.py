@@ -51,7 +51,7 @@ async def test_offline_episode_end_to_end(offline_settings):
     for prev, nxt in itertools.pairwise(scenes):
         assert prev["startFrame"] + prev["durationInFrames"] == nxt["startFrame"]
     assert all(c["endFrame"] <= episode["durationInFrames"] for c in episode["captions"])
-    assert "not financial advice" in scenes[-1]["narration"]
+    assert "not financial or medical advice" in scenes[-1]["narration"]
     assert {c["speaker"] for c in episode["captions"]} == {"a", "b"}
     assert [a["name"] for a in episode["anchors"]] == ["Maya", "Leo"]
     assert episode["short"]["durationInFrames"] <= 58 * episode["fps"]

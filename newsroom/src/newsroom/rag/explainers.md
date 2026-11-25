@@ -101,3 +101,43 @@ The Model Context Protocol, or MCP, is an open standard for connecting AI assist
 data. Instead of building a custom integration for every app, a company exposes its tools through
 an MCP server once, and any compatible AI assistant can use them, with the user's permission.
 Keywords: tools, integration, standard, protocol, connectors, agents
+
+## protein-folding | How do AI models predict protein shapes?
+Proteins are chains of building blocks called amino acids that fold into precise 3D shapes, and
+the shape decides what a protein does. Working out a shape in the lab can take months. AI models
+such as AlphaFold learned from thousands of known structures to predict a protein's shape from its
+amino-acid sequence, which helps scientists study diseases and design new medicines faster.
+Keywords: alphafold, protein, structure, folding, deepmind, biology, drug discovery
+
+## protein-design | What is AI protein design?
+AI protein design runs the problem in reverse: instead of predicting the shape of a natural protein,
+a generative model proposes new amino-acid sequences meant to fold into a shape with a useful job,
+such as binding to a virus or speeding up a chemical reaction. Designs still have to be made and
+tested in the lab, and responsible teams screen designs for misuse.
+Keywords: generative, design, enzyme, binder, synthetic biology, de novo
+
+## crispr | What is CRISPR?
+CRISPR is a gene-editing tool adapted from a natural defence system in bacteria. It uses a guide
+molecule to find a specific spot in DNA and a protein that cuts it, so scientists can disable,
+repair or change a gene. It is used in research and in a small number of approved treatments.
+Keywords: gene editing, dna, genetic, therapy, cas9, genome
+
+## mrna | How do mRNA medicines work?
+Messenger RNA, or mRNA, carries instructions that tell cells which protein to make. An mRNA vaccine
+or medicine delivers those instructions so the body makes a specific protein itself, for example a
+harmless piece of a virus that trains the immune system. The instructions break down naturally
+after a short time.
+Keywords: vaccine, moderna, rna, immune, biontech, therapy
+
+## clinical-trials | How do clinical trials work?
+New medicines are tested in people in stages. Phase 1 trials check safety in a small group, phase 2
+looks at whether the treatment works and at what dose, and phase 3 compares it with existing care
+in a much larger group. Most drugs that enter trials never reach approval, which is why trial
+results can move biotech stocks sharply.
+Keywords: trial, phase, fda, results, drug, patients, study
+
+## fda-approval | What does FDA approval mean?
+The U.S. Food and Drug Administration reviews the evidence from clinical trials to decide whether a
+medicine's benefits outweigh its risks for a specific use. Approval lets a company sell the drug in
+the United States for that use, and the agency keeps monitoring safety after approval.
+Keywords: fda, approval, regulator, drug, label, biotech

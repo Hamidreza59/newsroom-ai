@@ -20,6 +20,24 @@ const ChipIcon: React.FC<{ tone: string; frame: number }> = ({ tone, frame }) =>
   </svg>
 );
 
+const DnaIcon: React.FC<{ tone: string; frame: number }> = ({ tone, frame }) => (
+  <svg width="360" height="360" viewBox="0 0 100 100">
+    {Array.from({ length: 11 }).map((_, i) => {
+      const y = 8 + i * 8.4;
+      const phase = frame / 18 + i * 0.6;
+      const x1 = 50 + Math.sin(phase) * 26;
+      const x2 = 50 - Math.sin(phase) * 26;
+      return (
+        <g key={i}>
+          <line x1={x1} y1={y} x2={x2} y2={y} stroke={tone} strokeWidth="2" opacity={0.6} />
+          <circle cx={x1} cy={y} r="4" fill={tone} />
+          <circle cx={x2} cy={y} r="4" fill={tone} opacity={0.6} />
+        </g>
+      );
+    })}
+  </svg>
+);
+
 export const NewsScene: React.FC<{ scene: Scene }> = ({ scene }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -32,10 +50,10 @@ export const NewsScene: React.FC<{ scene: Scene }> = ({ scene }) => {
     <SceneFrame>
       <Panel style={{ position: "absolute", inset: 0, padding: "48px 60px", boxSizing: "border-box", overflow: "hidden" }}>
         <div style={{ position: "absolute", right: -60, top: -40, opacity: 0.09 }}>
-          <ChipIcon tone={tone} frame={frame} />
+          {scene.category === "Biotech" ? <DnaIcon tone={tone} frame={frame} /> : <ChipIcon tone={tone} frame={frame} />}
         </div>
         <div style={{ display: "flex", gap: 16, alignItems: "center" }}>
-          <Pill text={scene.category === "AI" ? "AI" : "Tech"} fg={tone} />
+          <Pill text={scene.category ?? "Tech"} fg={tone} />
           {scene.followUp && <Pill text="Follow-up" fg={color.gold} />}
           <div style={{ marginLeft: "auto", fontFamily: body, fontSize: 24, color: color.muted, fontWeight: 600,
                         letterSpacing: 2 }}>

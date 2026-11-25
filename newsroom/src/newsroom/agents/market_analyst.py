@@ -19,7 +19,7 @@ def fact_sheet(snap: MarketSnapshot) -> str:
             f"- {q.name}: closed at {q.price:,.0f}, {q.change_pct:+.1f} percent on the day, "
             f"{month:+.1f} percent over the past month"
         )
-    lines.append("Biggest gainers in the AI and big-tech watchlist:")
+    lines.append("Biggest gainers in the AI, big-tech and biotech watchlist:")
     lines += [f"- {q.name}: {q.change_pct:+.1f} percent to {q.price:,.2f}" for q in snap.gainers()]
     lines.append("Biggest decliners in the watchlist:")
     lines += [f"- {q.name}: {q.change_pct:+.1f} percent to {q.price:,.2f}" for q in snap.losers()]
@@ -45,7 +45,7 @@ class MarketAnalyst(Agent):
             f"Style rules:\n{guide}\n"
             f"Write 3 dialogue lines, 45 to 70 words in total. {b} leads the markets: the "
             f"first line is {a} handing over to {b} in a few words, then {b} covers the three "
-            f"indices, the standout AI and tech movers and the one-month trend. {a} may add one "
+            f"indices, the standout AI, tech and biotech movers and the one-month trend. {a} may add one "
             "short reaction or question. Use only numbers from the fact sheet. "
             "Headline: max 50 characters. Bullets: exactly 3, max 60 characters each."
         )

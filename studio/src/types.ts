@@ -31,7 +31,7 @@ export type Scene = {
   headline: string;
   bullets: string[];
   source: string;
-  category: "AI" | "Tech" | null;
+  category: "AI" | "Tech" | "Biotech" | null;
   followUp: boolean;
   index: number;
   total: number;

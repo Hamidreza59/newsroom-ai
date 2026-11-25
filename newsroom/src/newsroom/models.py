@@ -33,7 +33,7 @@ class MarketSnapshot(BaseModel):
         return [q for q in sorted(self.watchlist, key=lambda q: q.change_pct) if q.change_pct < 0][:n]
 
 
-Category = Literal["AI", "Tech"]
+Category = Literal["AI", "Tech", "Biotech"]
 
 
 class NewsItem(BaseModel):

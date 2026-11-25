@@ -16,6 +16,12 @@ ADVICE_RE = re.compile(
     r"can't lose|cannot lose|sure thing|price target|we recommend)\b",
     re.IGNORECASE,
 )
+MEDICAL_RE = re.compile(
+    r"\b(cures? (?:cancer|diabetes|alzheimer'?s|aging)|miracle (?:drug|cure|treatment)|"
+    r"guaranteed to (?:cure|work|heal)|you should (?:take|stop taking|try)|stop taking your|"
+    r"instead of (?:seeing|asking) (?:a|your) doctor|proven to cure)\b",
+    re.IGNORECASE,
+)
 HYPE_RE = re.compile(r"\b(game[- ]changer|revolutionary|insane|mind[- ]blowing)\b", re.IGNORECASE)
 
 HEADLINE_MAX, POINT_MAX, BULLET_MAX = 60, 75, 64
@@ -68,6 +74,8 @@ def check_language(text: str) -> list[str]:
     issues = []
     if m := ADVICE_RE.search(text):
         issues.append(f"remove investment-advice language: '{m.group(0)}'")
+    if m := MEDICAL_RE.search(text):
+        issues.append(f"remove medical-advice or cure claim: '{m.group(0)}'")
     if m := HYPE_RE.search(text):
         issues.append(f"remove hype word '{m.group(0)}'")
     return issues

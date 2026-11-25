@@ -1,27 +1,42 @@
-PY = cd newsroom && uv run
+UV = uv run --native-tls
 DATE ?= $(shell TZ=America/New_York date +%F)
+OUT ?= $(CURDIR)/out
 
-.PHONY: setup demo episode render studio test
+.PHONY: setup demo episode mcp-http render studio test contracts
 
 setup:
-	cd newsroom && uv sync
-	cd studio && npm install
-	$(PY) newsroom setup
+	uv sync --native-tls --all-packages
+	cd services/studio && npm install
+	$(UV) newsroom-voice setup
 	ollama pull qwen2.5:14b
+	ollama pull llama3.2
 
 demo:
-	$(PY) newsroom run --offline --llm mock --tts silent --date $(DATE) --render
+	$(UV) newsroom-agents run --offline --llm mock --no-record --date $(DATE)
+	$(UV) newsroom-voice build --tts silent --date $(DATE)
+	$(MAKE) render DATE=$(DATE)
+	$(UV) newsroom-publisher build --date $(DATE)
 
 episode:
-	$(PY) newsroom run --date $(DATE) --render
+	$(UV) newsroom-agents run --date $(DATE)
+	$(UV) newsroom-voice build --date $(DATE)
+	$(MAKE) render DATE=$(DATE)
+	$(UV) newsroom-publisher build --date $(DATE)
+
+mcp-http:
+	$(UV) newsroom-mcp --transport http --host 127.0.0.1 --port 8765
 
 render:
-	$(PY) newsroom render --date $(DATE)
+	cd services/studio && npm run --silent render -- $(OUT)/$(DATE)
 
 studio:
-	cd studio && npm run studio
+	cd services/studio && npm run studio
 
 test:
-	$(PY) pytest -q
-	$(PY) ruff check src tests
-	cd studio && npm run typecheck
+	$(UV) pytest -q
+	$(UV) ruff check packages services tests scripts
+	cd services/studio && npm run typecheck
+
+contracts:
+	$(UV) python scripts/gen_contracts.py
+	cd services/studio && npm run gen:types

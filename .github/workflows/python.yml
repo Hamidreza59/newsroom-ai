@@ -1,0 +1,37 @@
+name: python
+
+on:
+  push:
+    paths:
+      - "packages/**"
+      - "services/newsroom-mcp/**"
+      - "services/agents/**"
+      - "services/voice/**"
+      - "services/publisher/**"
+      - "tests/**"
+      - "scripts/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/python.yml"
+  pull_request:
+    paths:
+      - "packages/**"
+      - "services/newsroom-mcp/**"
+      - "services/agents/**"
+      - "services/voice/**"
+      - "services/publisher/**"
+      - "tests/**"
+      - "scripts/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - ".github/workflows/python.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync --all-packages
+      - run: uv run pytest -q
+      - run: uv run ruff check packages services tests scripts

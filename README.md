@@ -5,7 +5,8 @@
 ### A multi-agent AI newsroom that produces a daily animated markets, AI, tech & biotech news show
 
 **Live market data → AI/tech news → fact-checked two-anchor script → voices → broadcast-style video.**<br/>
-One command, under four minutes of video, ready for YouTube.
+One command, under four minutes of video, ready for YouTube.<br/>
+Built as independently deployable microservices in one monorepo.
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
@@ -27,6 +28,8 @@ One command, under four minutes of video, ready for YouTube.
 - [What it does](#what-it-does)
 - [Screenshots](#screenshots)
 - [Architecture](#architecture)
+  - [Services](#services)
+  - [Contracts and no-drift types](#contracts-and-no-drift-types)
   - [The agents](#the-agents)
   - [MCP server](#mcp-server)
   - [Retrieval-augmented generation](#retrieval-augmented-generation)
@@ -75,7 +78,7 @@ config change, not a rewrite.
 | 🤖 **Multi-agent LangGraph** | Eight single-purpose agents in a state graph with parallel branches, a bounded revision loop and a human-approval gate |
 | ⚡ **Right-sized models** | Each agent declares a `fast` or `smart` tier; cheap models do constrained jobs that code can verify |
 | 🛡️ **Guardrails** | Prompt-injection hygiene, content policy, least-privilege tools, LLM budget + circuit breaker, PII redaction, audit log |
-| 🔌 **MCP-native** | All data and memory access goes through a Model Context Protocol server over stdio |
+| 🔌 **MCP-native** | All data and memory access goes through a Model Context Protocol server over stdio or streamable HTTP |
 | 🧠 **RAG memory** | Semantic archive of past shows (no repeats, automatic follow-ups) plus a retrievable style guide |
 | ✅ **Grounded output** | Deterministic checks reject numbers that don't match the data and names that aren't in the source |
 | 🎙️ **Two-anchor dialogue** | Distinct voices, hand-offs and reactions, speaker-tagged captions |
@@ -85,7 +88,7 @@ config change, not a rewrite.
 | 🎯 **Engagement segments** | Cold-open hook, "AI in 30 seconds" explainer from a vetted knowledge base, daily quiz with tomorrow's reveal |
 | 📱 **Auto Shorts** | A vertical 1080×1920 cut of the hook and top story, ≤ 58 s |
 | 👔 **Daily wardrobe** | Each anchor gets a different seeded outfit every episode |
-| ⏱️ **Hard 4-minute cap** | The Producer measures real audio and drops the lowest-ranked story if needed |
+| ⏱️ **Hard 4-minute cap** | The agents estimate runtime and the voice service measures real audio, dropping the lowest-ranked story if needed |
 | 💸 **$0 to run** | Local LLM and TTS; deterministic fallbacks keep the run going if the model fails |
 
 ---
@@ -131,29 +134,62 @@ flowchart LR
         W --> QZ["Quiz Master ⚡"]
         HK & EX & QZ --> E{Editor}
         E -- "issues → revise (≤2)" --> W
-        E -- approved --> P[Producer]
-        P --> G{{Human review gate}}
+        E -- approved --> K[Package]
+        K --> G{{Human review gate}}
+    end
+
+    subgraph Voice["Voice service · Python"]
+        P[Producer · TTS, timing,<br/>captions, lip-sync]
+    end
+
+    subgraph Pub["Publisher · Python"]
+        PB[Website post + feed]
     end
 
     Sources --> MCP
-    Agents <-->|MCP over stdio| MCP
+    Agents <-->|MCP over stdio or HTTP| MCP
+    G --> PK["package.json · script.md"]
+    PK --> P
     P --> J["episode.json · narration.wav<br/>captions.srt · youtube.json"]
     J --> R2["Remotion studio · TypeScript/React"]
     R2 --> M["video.mp4 · short.mp4 · thumbnail.png"]
+    J --> PB
+    PB --> W["web/post.json · post.md · index.json"]
 ```
 
-The system has two halves joined by a single data contract, `episode.json`:
+The system is a monorepo of small services that only talk through files and MCP, so each one can
+run on its own today and map onto S3 and Step Functions later. The services meet at two data
+contracts: `package.json` (agents → voice) and `episode.json` (voice → studio and publisher).
 
-- **`newsroom/` (Python)**: the MCP server, the agents, RAG, text-to-speech and audio.
-- **`studio/` (TypeScript)**: a Remotion project that renders the episode as video.
+### Services
+
+| Service | Responsibility | Input → output | Run | Deploy target (later) |
+|---|---|---|---|---|
+| `newsroom-mcp` | Market data, news wire, RAG memory as MCP tools | MCP calls → tool results | `newsroom-mcp --transport http --port 8765` | ECS Fargate or App Runner service |
+| `agents` | LangGraph newsroom: pick, write, fact-check, estimate runtime, review gate | MCP tools → `package.json`, `script.md`, run reports | `newsroom-agents run` | Step Functions task (Lambda container or Fargate) |
+| `voice` | TTS, timing, captions, lip-sync, deterministic time cap | `package.json` → `episode.json`, `narration.wav`, `captions.srt`, `youtube.json`, `short.json` | `newsroom-voice build` | Fargate task (needs the Kokoro models) |
+| `studio` | Remotion render of the episode | `episode.json` + audio → `video.mp4`, `short.mp4`, `thumbnail.png` | `npm run render -- <dir>` | Remotion Lambda or a Fargate task |
+| `publisher` | Website post and feed for the company site | `episode.json`, `youtube.json` → `web/post.json`, `web/post.md`, `out/web/index.json` | `newsroom-publisher build` | Lambda writing to S3 |
+
+Shared code lives in `packages/newsroom-core` (Pydantic models, settings, HTTP helpers), and each
+service ships its own Dockerfile (build context is the repo root).
+
+### Contracts and no-drift types
+
+`episode.json` is defined once, by the `Episode` Pydantic model in `newsroom-core`. The JSON Schema
+generated from it is committed as `packages/contracts/episode.schema.json`, and the studio's
+TypeScript types (`services/studio/src/contract.ts`) are generated from that schema, so the
+Python producer and the TypeScript renderer cannot drift apart. A pytest regenerates the schema in
+memory and fails if the committed file is stale; `tsc --noEmit` fails if the studio stops matching
+the types. After changing a model, run `make contracts`.
 
 ### The agents
 
-The orchestrator (`pipeline.py`) is a **LangGraph `StateGraph`**. Market and Scout run in
+The orchestrator (`services/agents/.../pipeline.py`) is a **LangGraph `StateGraph`**. Market and Scout run in
 parallel, the three segment agents run in parallel after the Scriptwriter, the Editor's feedback
 loops back through a conditional edge (at most two rounds), and an optional `interrupt` asks a
 human to approve episodes where guardrails had to rewrite on-air copy. Agents exchange typed
-Pydantic objects through the graph state. Run `uv run newsroom graph` to print the live graph.
+Pydantic objects through the graph state. Run `uv run newsroom-agents graph` to print the live graph.
 
 | Agent | Tier | Responsibility |
 |---|:---:|---|
@@ -164,7 +200,8 @@ Pydantic objects through the graph state. Run `uv run newsroom graph` to print t
 | **Explainer** | 🧠 smart | Picks a concept tied to today's news from a curated knowledge base and explains it in about 30 seconds |
 | **Quiz Master** | ⚡ fast | Writes a multiple-choice question about today's news; reveals the last show's answer from memory |
 | **Editor** | 🔧 rules | Numbers, grounding, attribution, advice and hype filters, PII redaction, on-screen limits |
-| **Producer** | 🔧 rules | Voices, stings, captions, lip-sync, 4-minute cap, chapters, the Short's clip plan, disclosures |
+| **Packager** | 🔧 rules | Estimates runtime, trims to the time budget in priority order, writes `package.json` and `script.md` |
+| **Producer** (voice service) | 🔧 rules | Voices, stings, captions, lip-sync, measured 4-minute cap, chapters, the Short's clip plan, disclosures |
 
 Every LLM call has a deterministic fallback, so a slow or confused model degrades the copy but never
 breaks the daily run. See **[docs/AGENTIC_PRINCIPLES.md](docs/AGENTIC_PRINCIPLES.md)** for how
@@ -192,8 +229,9 @@ failures, switching every agent to its fallback.
 
 ### MCP server
 
-`newsroom/src/newsroom/mcp_server.py` is a standard MCP server (Python SDK v2, `MCPServer`) that
-agents reach over **stdio**. Because it speaks the standard protocol, the same tools also work from
+`services/newsroom-mcp` is a standard MCP server (Python SDK v2, `MCPServer`) that agents reach
+over **stdio** (default, spawned as a subprocess) or **streamable HTTP** at `/mcp` (set `MCP_URL`).
+Because it speaks the standard protocol, the same tools also work from
 Claude Desktop or any other MCP client.
 
 | Tool | Purpose |
@@ -209,7 +247,7 @@ Claude Desktop or any other MCP client.
 
 ### Retrieval-augmented generation
 
-A small SQLite-backed vector store (`rag/store.py`) holds two collections:
+A small SQLite-backed vector store (`newsroom_mcp/rag/store.py`) holds two collections:
 
 - **Archive (memory across days):** after each show, covered stories are embedded and saved. The
   next day, each candidate is searched against the previous week: similarity ≥ 0.80 is a repeat
@@ -242,7 +280,7 @@ the model:
 
 ### Video studio
 
-`studio/` is a [Remotion](https://www.remotion.dev) project. Everything is drawn in code (SVG and
+`services/studio/` is a [Remotion](https://www.remotion.dev) project. Everything is drawn in code (SVG and
 React), so there are no stock assets and nothing to license.
 
 - **Newsroom set:** night-city window, monitor wall, studio lights, glossy floor, anchor desk, and
@@ -272,9 +310,13 @@ git clone https://github.com/Hamidreza59/newsroom-ai.git
 cd newsroom-ai
 
 make setup      # Python + Node deps, Kokoro voice models, pulls qwen2.5:14b
-make demo       # offline: sample data, no LLM, silent audio — renders a video in ~5 min
+make demo       # offline: agents → voice (silent) → render → publisher, ~5 min
 make episode    # today's real show: live data, Ollama, Kokoro, rendered video
 ```
+
+Other targets: `make mcp-http` (MCP server over HTTP on 8765), `make render`, `make studio`
+(live preview), `make test` (pytest, ruff, studio typecheck) and `make contracts` (regenerate
+the schema and TypeScript types).
 
 Open the result:
 
@@ -288,14 +330,19 @@ Preview and tweak the animation live in the browser with `make studio`.
 <summary><b>Run the steps individually</b></summary>
 
 ```bash
-cd newsroom
-uv run newsroom run --help              # all options
-uv run newsroom run --offline --llm mock --tts silent
-uv run newsroom run --llm ollama --tts kokoro
-uv run newsroom render --date 2026-11-24
-uv run newsroom run --review            # pause for approval if guardrails fired
-uv run newsroom tools                   # list the MCP server's tools
-uv run newsroom graph                   # print the LangGraph orchestration as Mermaid
+uv run newsroom-agents run --help                       # all options
+uv run newsroom-agents run --offline --llm mock         # writes out/<date>/package.json + script.md
+uv run newsroom-agents run --review                     # pause for approval if guardrails fired
+uv run newsroom-agents tools                            # list the MCP server's tools
+uv run newsroom-agents graph                            # print the LangGraph orchestration as Mermaid
+uv run newsroom-voice build --tts silent                # or kokoro (default) / say
+uv run newsroom-voice setup                             # download the Kokoro models
+(cd services/studio && npm run render -- "$PWD/../../out/2026-11-24")
+uv run newsroom-publisher build --date 2026-11-24       # website post + feed
+
+# agents over HTTP instead of a stdio subprocess
+uv run newsroom-mcp --transport http --port 8765 &
+MCP_URL=http://127.0.0.1:8765/mcp uv run newsroom-agents run
 ```
 
 </details>
@@ -313,11 +360,12 @@ Copy `.env.example` to `.env`. All settings are optional.
 | `OPENAI_BASE_URL` / `OPENAI_API_KEY` / `OPENAI_MODEL` / `OPENAI_FAST_MODEL` | Groq endpoint | Used when `LLM_PROVIDER=openai` |
 | `LLM_CALL_BUDGET` | `40` | Maximum LLM calls per episode |
 | `HUMAN_REVIEW` | `false` | Pause for approval when guardrails rewrite on-air copy (same as `--review`) |
-| `TTS_PROVIDER` | `kokoro` | `kokoro` (Apache-2.0 voices), `say` (macOS preview only) or `silent` |
+| `MCP_URL` | empty | Streamable-HTTP MCP endpoint for the agents; empty spawns the server over stdio |
+| `TTS_PROVIDER` | `kokoro` | Voice service: `kokoro` (Apache-2.0 voices), `say` (macOS preview only) or `silent` |
 | `ANCHOR_A_NAME` / `ANCHOR_A_VOICE` | `Maya` / `af_heart` | Any Kokoro voice |
 | `ANCHOR_B_NAME` / `ANCHOR_B_VOICE` | `Leo` / `am_michael` | Any Kokoro voice |
 | `EMBEDDER` | `hashing` | `ollama` for `nomic-embed-text` |
-| `STORIES_PER_SHOW` | `5` | Upper bound; the Producer may drop stories to fit |
+| `STORIES_PER_SHOW` | `5` | Upper bound; the agents or voice service may drop stories to fit |
 | `MAX_SECONDS` | `235` | Hard cap on episode length (under 4 minutes) |
 | `SHOW_NAME` | `Bits & Bulls` | Used on screen, in the script and in metadata |
 
@@ -334,7 +382,10 @@ Each run writes to `out/<YYYY-MM-DD>/`:
 | `thumbnail.png` | 1280×720 YouTube thumbnail |
 | `youtube.json` | Title, description with chapters, sources and disclosures, and tags |
 | `captions.srt` | Speaker-labelled subtitles for YouTube |
-| `script.md` | Readable two-anchor script with source links, for human review |
+| `package.json` | Agents → voice contract: script, market snapshot, estimated runtime, `needs_review` and `approved` |
+| `script.md` | Readable two-anchor script with source links, for human review before voice and render |
+| `web/post.json` / `web/post.md` | Website post: title, summary, sources, chapters, quiz, tags, media paths |
+| `out/web/index.json` | Feed of all posts, newest first (one level above the dated folders) |
 | `episode.json` | The renderer's input: scenes, captions, market data, lip-sync tracks |
 | `narration.wav` | Mixed voices and alert stings |
 | `run_report.json` | Models per tier, LLM calls versus budget, per-agent usage, quality metrics, guardrail counts |
@@ -347,31 +398,37 @@ Each run writes to `out/<YYYY-MM-DD>/`:
 
 ```
 newsroom-ai/
-├── newsroom/                      Python package (uv)
-│   ├── src/newsroom/
-│   │   ├── mcp_server.py          MCP tools: market, news, article details, RAG, segment memory
-│   │   ├── pipeline.py            LangGraph state graph: agents, revision loop, review gate
-│   │   ├── guardrails.py          input hygiene, content policy, scoped tools, PII, audit log
-│   │   ├── observability.py       spans, metrics, trace.jsonl
-│   │   ├── agents/                scout · analyst · scriptwriter · segments (hook, explainer, quiz) · editor · producer
-│   │   ├── data/                  market data, RSS + Hacker News, sample data
-│   │   ├── rag/                   embedders, SQLite vector store, style_guide.md, explainers.md
-│   │   ├── llm.py                 LangChain providers + tiered router, budget, circuit breaker
-│   │   ├── tts.py                 Kokoro / macOS say / silent engines
-│   │   ├── sfx.py                 synthesized news-alert sting
-│   │   └── cli.py                 `newsroom` command
-│   └── tests/
-├── studio/                        Remotion project (TypeScript/React)
-│   ├── src/DailyShow.tsx          main composition
-│   ├── src/ShortVideo.tsx         vertical YouTube Short
-│   ├── src/Thumbnail.tsx
-│   ├── src/scenes/                cold open · intro · market · explainer · news · quiz · outro
-│   └── src/components/            Newsroom set + camera, Presenter, wardrobe, AlertCard, charts, ticker
+├── pyproject.toml                 uv workspace root, pytest and ruff config
+├── packages/
+│   ├── newsroom-core/             shared Pydantic models, settings, HTTP helpers
+│   └── contracts/                 episode.schema.json (generated from the models)
+├── services/
+│   ├── newsroom-mcp/              MCP server: market, news, article details, RAG, segment memory
+│   │   └── src/newsroom_mcp/      server.py · data/ (market, RSS + Hacker News) · rag/ (store, style guide, explainers)
+│   ├── agents/                    LangGraph newsroom → package.json + script.md
+│   │   └── src/newsroom_agents/   pipeline.py · estimate.py · guardrails.py · llm.py · observability.py · cli.py
+│   │       └── agents/            scout · analyst · scriptwriter · segments (hook, explainer, quiz) · editor
+│   ├── voice/                     package.json → episode.json, narration, captions
+│   │   └── src/newsroom_voice/    producer.py · tts.py · sfx.py · speech.py · cli.py
+│   ├── publisher/                 episode → website post and feed
+│   └── studio/                    Remotion project (TypeScript/React)
+│       ├── src/DailyShow.tsx      main composition
+│       ├── src/ShortVideo.tsx     vertical YouTube Short
+│       ├── src/Thumbnail.tsx
+│       ├── src/contract.ts        generated from packages/contracts (do not edit)
+│       ├── src/scenes/            cold open · intro · market · explainer · news · quiz · outro
+│       └── src/components/        Newsroom set + camera, Presenter, wardrobe, AlertCard, charts, ticker
+├── tests/                         integration (offline end to end) and contract tests
+├── scripts/gen_contracts.py       regenerate the JSON Schema
+├── .github/workflows/             python.yml · studio.yml
 ├── docs/AGENTIC_PRINCIPLES.md     principle → implementation map
 ├── docs/images/                   README screenshots
 ├── Makefile
 └── .env.example
 ```
+
+Each service has its own `Dockerfile`; build from the repo root, for example
+`docker build -f services/newsroom-mcp/Dockerfile -t newsroom-mcp .`.
 
 ---
 
@@ -381,11 +438,11 @@ newsroom-ai/
 make test
 ```
 
-This runs `pytest` (the full LangGraph episode offline, the MCP server over its real protocol,
-guardrails, routing, circuit breaker, quiz verification and the graph's shape), `ruff`, and
-`tsc --noEmit` for the studio.
+This runs `pytest` (agents → voice → publisher offline end to end, the MCP server over stdio and
+HTTP, guardrails, routing, circuit breaker, quiz verification, the graph's shape and the contract
+check), `ruff`, and `tsc --noEmit` for the studio.
 
-The offline path (`--offline --llm mock --tts silent`) needs no network or model, which keeps the
+The offline path (`--offline --llm mock`, then `--tts silent`) needs no network or model, which keeps the
 tests fast and deterministic.
 
 ---
@@ -427,7 +484,9 @@ flowchart LR
     SF --> SNS[SNS<br/>review + alerts]
 ```
 
-- [ ] Containerized pipeline on AWS Lambda, triggered by EventBridge after the market close
+- [ ] Deploy each service from its Dockerfile, passing `package.json` and `episode.json` through S3 and chaining the services with Step Functions
+- [ ] YouTube upload step in the publisher (YouTube Data API), after the approval gate
+- [ ] Serve `out/web/` from the company website
 - [ ] Hosted LLM provider (Amazon Bedrock) and semantic embeddings
 - [ ] Distributed rendering with Remotion Lambda, assets in S3
 - [ ] Human approval in the cloud (the LangGraph review gate, surfaced through SNS or Slack), then upload through the YouTube Data API
@@ -447,7 +506,8 @@ flowchart LR
 | `npm install` fails with `UNABLE_TO_GET_ISSUER_CERT_LOCALLY` behind a TLS-inspecting proxy | Export your system roots (`security find-certificate -a -p /Library/Keychains/System.keychain /System/Library/Keychains/SystemRootCertificates.keychain > ~/ca.pem`) and set `NODE_EXTRA_CA_CERTS=~/ca.pem` |
 | `uv sync` SSL errors behind a proxy | `uv sync --native-tls` |
 | LLM warnings and template-sounding copy | Make sure `ollama serve` is running and the model is pulled (`ollama pull qwen2.5:14b`) |
-| Episode drops a story | Expected when the narration would exceed `MAX_SECONDS`; the lowest-ranked story is removed |
+| Episode drops a story | Expected when the estimated or measured narration would exceed `MAX_SECONDS`; the lowest-ranked story is removed |
+| `newsroom-voice build` refuses to run | `package.json` is not approved; read `script.md`, then re-run `newsroom-agents run` and approve |
 | Mouth not moving in Remotion Studio | The sample episode has no audio; run `make episode` and open that episode |
 
 ---

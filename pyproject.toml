@@ -1,0 +1,31 @@
+[project]
+name = "newsroom-ai"
+version = "0.2.0"
+description = "Multi-agent AI newsroom: workspace root"
+requires-python = ">=3.12,<3.14"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.3", "pytest-asyncio>=0.25", "ruff>=0.8"]
+
+[tool.uv]
+exclude-newer = "2026-11-08T00:00:00Z"
+
+[tool.uv.workspace]
+members = ["packages/newsroom-core", "services/newsroom-mcp", "services/agents", "services/voice", "services/publisher"]
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+default = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["packages", "services", "tests"]
+addopts = "--import-mode=importlib"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["services/studio"]

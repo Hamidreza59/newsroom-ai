@@ -1,5 +1,5 @@
-out/
-data/
+/out/
+/data/
 .env
 node_modules/
 .venv/
@@ -8,4 +8,4 @@ __pycache__/
 .DS_Store
 .pytest_cache/
 .ruff_cache/
-studio/out/
+services/studio/out/

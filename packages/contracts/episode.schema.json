@@ -1,0 +1,412 @@
+{
+  "$defs": {
+    "Anchor": {
+      "properties": {
+        "id": {
+          "enum": [
+            "a",
+            "b"
+          ],
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ],
+      "title": "Anchor",
+      "type": "object"
+    },
+    "Caption": {
+      "properties": {
+        "endFrame": {
+          "type": "integer"
+        },
+        "speaker": {
+          "enum": [
+            "a",
+            "b"
+          ],
+          "type": "string"
+        },
+        "startFrame": {
+          "type": "integer"
+        },
+        "text": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "text",
+        "speaker",
+        "startFrame",
+        "endFrame"
+      ],
+      "title": "Caption",
+      "type": "object"
+    },
+    "EpMarket": {
+      "properties": {
+        "asOf": {
+          "type": "string"
+        },
+        "gainers": {
+          "items": {
+            "$ref": "#/$defs/EpQuote"
+          },
+          "type": "array"
+        },
+        "indices": {
+          "items": {
+            "$ref": "#/$defs/EpQuote"
+          },
+          "type": "array"
+        },
+        "losers": {
+          "items": {
+            "$ref": "#/$defs/EpQuote"
+          },
+          "type": "array"
+        },
+        "sampleData": {
+          "default": false,
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "asOf",
+        "indices",
+        "gainers",
+        "losers",
+        "sampleData"
+      ],
+      "title": "EpMarket",
+      "type": "object"
+    },
+    "EpQuote": {
+      "properties": {
+        "change": {
+          "type": "number"
+        },
+        "changePct": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "series": {
+          "items": {
+            "$ref": "#/$defs/PricePoint"
+          },
+          "type": "array"
+        },
+        "symbol": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "symbol",
+        "name",
+        "price",
+        "change",
+        "changePct",
+        "series"
+      ],
+      "title": "EpQuote",
+      "type": "object"
+    },
+    "PricePoint": {
+      "properties": {
+        "close": {
+          "type": "number"
+        },
+        "date": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "date",
+        "close"
+      ],
+      "title": "PricePoint",
+      "type": "object"
+    },
+    "Scene": {
+      "properties": {
+        "alert": {
+          "default": "",
+          "type": "string"
+        },
+        "alertFrames": {
+          "default": 0,
+          "type": "integer"
+        },
+        "bullets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "category": {
+          "anyOf": [
+            {
+              "enum": [
+                "AI",
+                "Tech",
+                "Biotech"
+              ],
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "durationInFrames": {
+          "type": "integer"
+        },
+        "followUp": {
+          "default": false,
+          "type": "boolean"
+        },
+        "headline": {
+          "default": "",
+          "type": "string"
+        },
+        "index": {
+          "default": 0,
+          "type": "integer"
+        },
+        "narration": {
+          "type": "string"
+        },
+        "options": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "reveal": {
+          "default": "",
+          "type": "string"
+        },
+        "source": {
+          "default": "",
+          "type": "string"
+        },
+        "startFrame": {
+          "type": "integer"
+        },
+        "total": {
+          "default": 0,
+          "type": "integer"
+        },
+        "type": {
+          "enum": [
+            "coldopen",
+            "intro",
+            "market",
+            "explainer",
+            "news",
+            "quiz",
+            "outro"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "startFrame",
+        "durationInFrames",
+        "narration",
+        "headline",
+        "bullets",
+        "source",
+        "category",
+        "followUp",
+        "index",
+        "total",
+        "alert",
+        "alertFrames",
+        "options",
+        "reveal"
+      ],
+      "title": "Scene",
+      "type": "object"
+    },
+    "ShortClip": {
+      "properties": {
+        "endFrame": {
+          "type": "integer"
+        },
+        "startFrame": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "startFrame",
+        "endFrame"
+      ],
+      "title": "ShortClip",
+      "type": "object"
+    },
+    "ShortSpec": {
+      "properties": {
+        "clips": {
+          "items": {
+            "$ref": "#/$defs/ShortClip"
+          },
+          "type": "array"
+        },
+        "durationInFrames": {
+          "type": "integer"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "clips",
+        "durationInFrames"
+      ],
+      "title": "ShortSpec",
+      "type": "object"
+    },
+    "YouTubeMeta": {
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "description",
+        "tags"
+      ],
+      "title": "YouTubeMeta",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "anchors": {
+      "items": {
+        "$ref": "#/$defs/Anchor"
+      },
+      "type": "array"
+    },
+    "audioFile": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "captions": {
+      "items": {
+        "$ref": "#/$defs/Caption"
+      },
+      "type": "array"
+    },
+    "date": {
+      "type": "string"
+    },
+    "disclaimer": {
+      "type": "string"
+    },
+    "durationInFrames": {
+      "type": "integer"
+    },
+    "fps": {
+      "type": "integer"
+    },
+    "height": {
+      "default": 1080,
+      "type": "integer"
+    },
+    "market": {
+      "$ref": "#/$defs/EpMarket"
+    },
+    "mouths": {
+      "additionalProperties": {
+        "items": {
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "type": "object"
+    },
+    "scenes": {
+      "items": {
+        "$ref": "#/$defs/Scene"
+      },
+      "type": "array"
+    },
+    "short": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ShortSpec"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "showName": {
+      "type": "string"
+    },
+    "ticker": {
+      "items": {
+        "$ref": "#/$defs/EpQuote"
+      },
+      "type": "array"
+    },
+    "width": {
+      "default": 1920,
+      "type": "integer"
+    },
+    "youtube": {
+      "$ref": "#/$defs/YouTubeMeta"
+    }
+  },
+  "required": [
+    "date",
+    "showName",
+    "fps",
+    "width",
+    "height",
+    "durationInFrames",
+    "audioFile",
+    "market",
+    "ticker",
+    "scenes",
+    "captions",
+    "youtube",
+    "disclaimer",
+    "anchors",
+    "mouths",
+    "short"
+  ],
+  "title": "Episode",
+  "type": "object"
+}

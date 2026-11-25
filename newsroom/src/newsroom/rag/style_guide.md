@@ -7,7 +7,7 @@ but never sarcasm about people or companies. No hype words like "game-changer", 
 or "insane".
 
 ## Pacing and length
-The whole show must fit in under three minutes, about 150 spoken words per minute. The intro is
+The whole show must fit in under four minutes, about 150 spoken words per minute. The intro is
 two or three sentences. Each news story is 45 to 65 words. The market segment is 60 to 90 words.
 Lead with the most important fact, then one sentence of context and one of why it matters.
 

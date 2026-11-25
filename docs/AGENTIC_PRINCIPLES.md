@@ -14,7 +14,7 @@ names the concrete mechanism that implements it and where to find it in the code
 | 7 | **Content policy** | Explicit, graphic, self-harm and hate topics are excluded before any model sees them | `guardrails.py` · `policy_violation` |
 | 8 | **Grounding** | Names and numbers on air must appear in the source or the fact sheet | `agents/editor.py` |
 | 9 | **Verification in code** | Market numbers, quiz answers and attribution are checked deterministically, not by an LLM | `editor.py` · `QuizMaster.validate` |
-| 10 | **Bounded autonomy** | At most two revision rounds; per-run LLM budget; hard 3-minute cap | `pipeline.py` · `LlmRouter` · `Producer` |
+| 10 | **Bounded autonomy** | At most two revision rounds; per-run LLM budget; hard 4-minute cap | `pipeline.py` · `LlmRouter` · `Producer` |
 | 11 | **Graceful degradation** | Every LLM step has a deterministic fallback; a circuit breaker switches to them after repeated failures | `Agent.ask` · `_Metered` |
 | 12 | **Human in the loop** | If guardrails had to rewrite on-air copy, the graph `interrupt`s for approval (`--review`) | `pipeline.py` · `review_gate` |
 | 13 | **Memory with scope** | RAG archive limited to a 7-day window; segment memory for explainers and quizzes | `rag/store.py` · MCP tools |

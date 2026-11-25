@@ -86,8 +86,8 @@ class Settings:
         default_factory=lambda: _env("OLLAMA_EMBED_MODEL", "nomic-embed-text")
     )
 
-    stories_per_show: int = field(default_factory=lambda: int(_env("STORIES_PER_SHOW", "4")))
-    max_seconds: float = field(default_factory=lambda: float(_env("MAX_SECONDS", "178")))
+    stories_per_show: int = field(default_factory=lambda: int(_env("STORIES_PER_SHOW", "5")))
+    max_seconds: float = field(default_factory=lambda: float(_env("MAX_SECONDS", "235")))
     fps: int = 30
 
     out_dir: Path = field(default_factory=lambda: Path(_env("OUT_DIR", str(ROOT / "out"))))

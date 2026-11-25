@@ -5,7 +5,7 @@
 ### A multi-agent AI newsroom that produces a daily animated markets, AI, tech & biotech news show
 
 **Live market data → AI/tech news → fact-checked two-anchor script → voices → broadcast-style video.**<br/>
-One command, under three minutes of video, ready for YouTube.
+One command, under four minutes of video, ready for YouTube.
 
 ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?logo=typescript&logoColor=white)
@@ -85,7 +85,7 @@ config change, not a rewrite.
 | 🎯 **Engagement segments** | Cold-open hook, "AI in 30 seconds" explainer from a vetted knowledge base, daily quiz with tomorrow's reveal |
 | 📱 **Auto Shorts** | A vertical 1080×1920 cut of the hook and top story, ≤ 58 s |
 | 👔 **Daily wardrobe** | Each anchor gets a different seeded outfit every episode |
-| ⏱️ **Hard 3-minute cap** | The Producer measures real audio and drops the lowest-ranked story if needed |
+| ⏱️ **Hard 4-minute cap** | The Producer measures real audio and drops the lowest-ranked story if needed |
 | 💸 **$0 to run** | Local LLM and TTS; deterministic fallbacks keep the run going if the model fails |
 
 ---
@@ -164,7 +164,7 @@ Pydantic objects through the graph state. Run `uv run newsroom graph` to print t
 | **Explainer** | 🧠 smart | Picks a concept tied to today's news from a curated knowledge base and explains it in about 30 seconds |
 | **Quiz Master** | ⚡ fast | Writes a multiple-choice question about today's news; reveals the last show's answer from memory |
 | **Editor** | 🔧 rules | Numbers, grounding, attribution, advice and hype filters, PII redaction, on-screen limits |
-| **Producer** | 🔧 rules | Voices, stings, captions, lip-sync, 3-minute cap, chapters, the Short's clip plan, disclosures |
+| **Producer** | 🔧 rules | Voices, stings, captions, lip-sync, 4-minute cap, chapters, the Short's clip plan, disclosures |
 
 Every LLM call has a deterministic fallback, so a slow or confused model degrades the copy but never
 breaks the daily run. See **[docs/AGENTIC_PRINCIPLES.md](docs/AGENTIC_PRINCIPLES.md)** for how
@@ -317,8 +317,8 @@ Copy `.env.example` to `.env`. All settings are optional.
 | `ANCHOR_A_NAME` / `ANCHOR_A_VOICE` | `Maya` / `af_heart` | Any Kokoro voice |
 | `ANCHOR_B_NAME` / `ANCHOR_B_VOICE` | `Leo` / `am_michael` | Any Kokoro voice |
 | `EMBEDDER` | `hashing` | `ollama` for `nomic-embed-text` |
-| `STORIES_PER_SHOW` | `4` | Upper bound; the Producer may drop stories to fit |
-| `MAX_SECONDS` | `178` | Hard cap on episode length |
+| `STORIES_PER_SHOW` | `5` | Upper bound; the Producer may drop stories to fit |
+| `MAX_SECONDS` | `235` | Hard cap on episode length (under 4 minutes) |
 | `SHOW_NAME` | `Bits & Bulls` | Used on screen, in the script and in metadata |
 
 ---
@@ -329,7 +329,7 @@ Each run writes to `out/<YYYY-MM-DD>/`:
 
 | File | Description |
 |---|---|
-| `video.mp4` | 1920×1080 H.264 at 30 fps, under 3 minutes |
+| `video.mp4` | 1920×1080 H.264 at 30 fps, under 4 minutes |
 | `short.mp4` / `short.json` | 1080×1920 YouTube Short (≤ 58 s) and its title and description |
 | `thumbnail.png` | 1280×720 YouTube thumbnail |
 | `youtube.json` | Title, description with chapters, sources and disclosures, and tags |

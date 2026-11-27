@@ -68,14 +68,14 @@ export default async function HomePage() {
   return (
     <div className="space-y-14">
       <div className="grid gap-6 lg:grid-cols-12">
-        <div className="lg:col-span-8">
+        <div className="min-w-0 lg:col-span-8">
           {home.latestEpisode ? (
             <Hero episode={home.latestEpisode} detail={detail} />
           ) : (
             <div className="card p-10 text-center text-muted">The first episode is on its way.</div>
           )}
         </div>
-        <div className="lg:col-span-4">
+        <div className="min-w-0 lg:col-span-4">
           <MarketOverviewPanel markets={home.markets} />
         </div>
       </div>

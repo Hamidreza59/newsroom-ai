@@ -40,14 +40,14 @@ export default async function MarketsPage() {
       <MarketsExplorer indices={markets.indices} watchlist={markets.watchlist} />
 
       <div className="grid gap-6 lg:grid-cols-12">
-        <section className="card flex flex-col p-5 sm:p-6 lg:col-span-7" aria-labelledby="heatmap-h">
+        <section className="card flex flex-col p-5 sm:p-6 min-w-0 lg:col-span-7" aria-labelledby="heatmap-h">
           <h2 id="heatmap-h" className="mb-4 text-lg font-bold tracking-tight">Sector heatmap</h2>
           <SectorHeatmap sectors={markets.sectors} />
           <HeatmapLegend />
           <div className="h-5" />
           <SectorBreadth sectors={markets.sectors} />
         </section>
-        <div className="grid gap-6 lg:col-span-5 lg:grid-rows-2">
+        <div className="grid min-w-0 gap-6 lg:col-span-5 lg:grid-rows-2">
           <section className="card p-5 sm:p-6" aria-labelledby="gain-h">
             <h2 id="gain-h" className="mb-3 text-lg font-bold tracking-tight">Top gainers</h2>
             <MoversChart quotes={markets.gainers} title="Top gainers" />

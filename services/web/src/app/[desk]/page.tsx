@@ -60,7 +60,7 @@ export default async function DeskPage({ params }: { params: Params }) {
       </div>
 
       <div className="grid gap-8 lg:grid-cols-12">
-        <div className="space-y-6 lg:col-span-8">
+        <div className="min-w-0 space-y-6 lg:col-span-8">
           {featured ? <FeaturedStory item={featured} accent={cat.color} /> : <p className="card p-8 text-muted">No stories on this desk yet.</p>}
           {rest.length > 0 && (
             <div className="card px-6 py-2">
@@ -69,7 +69,7 @@ export default async function DeskPage({ params }: { params: Params }) {
           )}
         </div>
 
-        <aside className="space-y-6 lg:col-span-4" aria-label="Desk analytics">
+        <aside className="min-w-0 space-y-6 lg:col-span-4" aria-label="Desk analytics">
           <section className="card p-5" aria-labelledby="vol-h">
             <h2 id="vol-h" className="eyebrow mb-3">Story volume · 7 days</h2>
             <VolumeChart data={feed.volume} color={cat.color} />

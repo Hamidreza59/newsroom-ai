@@ -46,7 +46,7 @@ export default async function EpisodePage({ params }: { params: Params }) {
       <EpisodePlayer videoSrc={mediaUrl(ep.videoUrl)} thumbnailUrl={ep.thumbnailUrl} date={ep.date} chapters={ep.chapters} />
 
       <div className="grid gap-10 lg:grid-cols-12">
-        <div className="space-y-10 lg:col-span-7">
+        <div className="min-w-0 space-y-10 lg:col-span-7">
           <section aria-labelledby="sum-h">
             <h2 id="sum-h" className="eyebrow mb-3">Summary</h2>
             <p className="leading-relaxed">{ep.summary}</p>
@@ -59,7 +59,7 @@ export default async function EpisodePage({ params }: { params: Params }) {
             </section>
           )}
         </div>
-        <aside className="space-y-6 lg:col-span-5" aria-label="Sources">
+        <aside className="min-w-0 space-y-6 lg:col-span-5" aria-label="Sources">
           <section className="card p-5">
             <h2 className="eyebrow mb-3">Sources</h2>
             <ul className="divide-y divide-line">

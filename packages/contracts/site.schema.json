@@ -1,0 +1,877 @@
+{
+  "$defs": {
+    "Chapter": {
+      "properties": {
+        "time": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "time",
+        "title"
+      ],
+      "title": "Chapter",
+      "type": "object"
+    },
+    "EpisodeDetail": {
+      "properties": {
+        "chapters": {
+          "items": {
+            "$ref": "#/$defs/Chapter"
+          },
+          "type": "array"
+        },
+        "date": {
+          "type": "string"
+        },
+        "disclaimer": {
+          "type": "string"
+        },
+        "durationSeconds": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "quiz": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EpisodeQuiz"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scriptMarkdown": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shortUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "show": {
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/EpisodeSource"
+          },
+          "type": "array"
+        },
+        "storyCount": {
+          "type": "integer"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "thumbnailUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "videoUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "date",
+        "title",
+        "summary",
+        "durationSeconds",
+        "storyCount",
+        "thumbnailUrl",
+        "videoUrl",
+        "shortUrl",
+        "show",
+        "tags",
+        "disclaimer",
+        "chapters",
+        "sources",
+        "quiz",
+        "scriptMarkdown"
+      ],
+      "title": "EpisodeDetail",
+      "type": "object"
+    },
+    "EpisodeQuiz": {
+      "properties": {
+        "answer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "options": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "question": {
+          "type": "string"
+        },
+        "reveal": {
+          "default": "",
+          "type": "string"
+        }
+      },
+      "required": [
+        "question",
+        "options",
+        "reveal",
+        "answer"
+      ],
+      "title": "EpisodeQuiz",
+      "type": "object"
+    },
+    "EpisodeSource": {
+      "properties": {
+        "publisher": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "publisher",
+        "url"
+      ],
+      "title": "EpisodeSource",
+      "type": "object"
+    },
+    "EpisodeSummary": {
+      "properties": {
+        "date": {
+          "type": "string"
+        },
+        "durationSeconds": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "shortUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "storyCount": {
+          "type": "integer"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "thumbnailUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "title": {
+          "type": "string"
+        },
+        "videoUrl": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "date",
+        "title",
+        "summary",
+        "durationSeconds",
+        "storyCount",
+        "thumbnailUrl",
+        "videoUrl",
+        "shortUrl"
+      ],
+      "title": "EpisodeSummary",
+      "type": "object"
+    },
+    "Feature": {
+      "properties": {
+        "dek": {
+          "type": "string"
+        },
+        "disclaimer": {
+          "type": "string"
+        },
+        "generatedBy": {
+          "$ref": "#/$defs/GeneratedBy"
+        },
+        "glossary": {
+          "items": {
+            "$ref": "#/$defs/GlossaryEntry"
+          },
+          "type": "array"
+        },
+        "publishedAt": {
+          "type": "string"
+        },
+        "readingMinutes": {
+          "type": "integer"
+        },
+        "related": {
+          "items": {
+            "$ref": "#/$defs/RelatedStory"
+          },
+          "type": "array"
+        },
+        "sections": {
+          "items": {
+            "$ref": "#/$defs/FeatureSection"
+          },
+          "type": "array"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "sources": {
+          "items": {
+            "$ref": "#/$defs/FeatureSource"
+          },
+          "type": "array"
+        },
+        "takeaways": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "title": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "week": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "slug",
+        "week",
+        "title",
+        "dek",
+        "topic",
+        "readingMinutes",
+        "publishedAt",
+        "sections",
+        "takeaways",
+        "glossary",
+        "related",
+        "sources",
+        "disclaimer",
+        "generatedBy"
+      ],
+      "title": "Feature",
+      "type": "object"
+    },
+    "FeatureSection": {
+      "properties": {
+        "body": {
+          "type": "string"
+        },
+        "heading": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "heading",
+        "body"
+      ],
+      "title": "FeatureSection",
+      "type": "object"
+    },
+    "FeatureSource": {
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "url"
+      ],
+      "title": "FeatureSource",
+      "type": "object"
+    },
+    "FeatureSummary": {
+      "properties": {
+        "dek": {
+          "type": "string"
+        },
+        "publishedAt": {
+          "type": "string"
+        },
+        "readingMinutes": {
+          "type": "integer"
+        },
+        "slug": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "week": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "slug",
+        "week",
+        "title",
+        "dek",
+        "topic",
+        "readingMinutes",
+        "publishedAt"
+      ],
+      "title": "FeatureSummary",
+      "type": "object"
+    },
+    "GeneratedBy": {
+      "properties": {
+        "agent": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "agent",
+        "model"
+      ],
+      "title": "GeneratedBy",
+      "type": "object"
+    },
+    "GlossaryEntry": {
+      "properties": {
+        "definition": {
+          "type": "string"
+        },
+        "term": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "term",
+        "definition"
+      ],
+      "title": "GlossaryEntry",
+      "type": "object"
+    },
+    "Health": {
+      "properties": {
+        "offline": {
+          "type": "boolean"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "offline"
+      ],
+      "title": "Health",
+      "type": "object"
+    },
+    "Home": {
+      "properties": {
+        "feature": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/FeatureSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "latestEpisode": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EpisodeSummary"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "markets": {
+          "$ref": "#/$defs/MarketOverview"
+        },
+        "topStories": {
+          "items": {
+            "$ref": "#/$defs/TopStories"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "latestEpisode",
+        "markets",
+        "topStories",
+        "feature"
+      ],
+      "title": "Home",
+      "type": "object"
+    },
+    "KeywordCount": {
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "term": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "term",
+        "count"
+      ],
+      "title": "KeywordCount",
+      "type": "object"
+    },
+    "MarketOverview": {
+      "properties": {
+        "asOf": {
+          "type": "string"
+        },
+        "gainers": {
+          "items": {
+            "$ref": "#/$defs/Quote"
+          },
+          "type": "array"
+        },
+        "indices": {
+          "items": {
+            "$ref": "#/$defs/Quote"
+          },
+          "type": "array"
+        },
+        "losers": {
+          "items": {
+            "$ref": "#/$defs/Quote"
+          },
+          "type": "array"
+        },
+        "sampleData": {
+          "type": "boolean"
+        },
+        "sectors": {
+          "items": {
+            "$ref": "#/$defs/Sector"
+          },
+          "type": "array"
+        },
+        "watchlist": {
+          "items": {
+            "$ref": "#/$defs/Quote"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "asOf",
+        "sampleData",
+        "indices",
+        "watchlist",
+        "gainers",
+        "losers",
+        "sectors"
+      ],
+      "title": "MarketOverview",
+      "type": "object"
+    },
+    "NewsFeed": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/SiteNewsItem"
+          },
+          "type": "array"
+        },
+        "keywords": {
+          "items": {
+            "$ref": "#/$defs/KeywordCount"
+          },
+          "type": "array"
+        },
+        "label": {
+          "type": "string"
+        },
+        "tab": {
+          "enum": [
+            "markets",
+            "ai",
+            "ai-finance",
+            "tech",
+            "biotech"
+          ],
+          "type": "string"
+        },
+        "topSources": {
+          "items": {
+            "$ref": "#/$defs/SourceCount"
+          },
+          "type": "array"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "volume": {
+          "items": {
+            "$ref": "#/$defs/VolumePoint"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "tab",
+        "label",
+        "updatedAt",
+        "items",
+        "volume",
+        "topSources",
+        "keywords"
+      ],
+      "title": "NewsFeed",
+      "type": "object"
+    },
+    "PriceHistory": {
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/PricePoint"
+          },
+          "type": "array"
+        },
+        "range": {
+          "enum": [
+            "1mo",
+            "6mo",
+            "1y"
+          ],
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "symbol",
+        "name",
+        "range",
+        "points"
+      ],
+      "title": "PriceHistory",
+      "type": "object"
+    },
+    "PricePoint": {
+      "properties": {
+        "close": {
+          "type": "number"
+        },
+        "date": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "date",
+        "close"
+      ],
+      "title": "PricePoint",
+      "type": "object"
+    },
+    "Quote": {
+      "properties": {
+        "change": {
+          "type": "number"
+        },
+        "changePct": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "price": {
+          "type": "number"
+        },
+        "series": {
+          "items": {
+            "$ref": "#/$defs/PricePoint"
+          },
+          "type": "array"
+        },
+        "symbol": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "symbol",
+        "name",
+        "price",
+        "change",
+        "changePct",
+        "series"
+      ],
+      "title": "Quote",
+      "type": "object"
+    },
+    "RelatedStory": {
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "title",
+        "url",
+        "source"
+      ],
+      "title": "RelatedStory",
+      "type": "object"
+    },
+    "Sector": {
+      "properties": {
+        "changePct": {
+          "type": "number"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/SectorMember"
+          },
+          "type": "array"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "changePct",
+        "members"
+      ],
+      "title": "Sector",
+      "type": "object"
+    },
+    "SectorMember": {
+      "properties": {
+        "changePct": {
+          "type": "number"
+        },
+        "name": {
+          "type": "string"
+        },
+        "symbol": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "symbol",
+        "name",
+        "changePct"
+      ],
+      "title": "SectorMember",
+      "type": "object"
+    },
+    "SiteNewsItem": {
+      "properties": {
+        "category": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "published": {
+          "type": "string"
+        },
+        "score": {
+          "type": "number"
+        },
+        "source": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "title": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "url",
+        "source",
+        "published",
+        "summary",
+        "category",
+        "tags",
+        "score"
+      ],
+      "title": "SiteNewsItem",
+      "type": "object"
+    },
+    "SourceCount": {
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "source": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "count"
+      ],
+      "title": "SourceCount",
+      "type": "object"
+    },
+    "TopStories": {
+      "properties": {
+        "items": {
+          "items": {
+            "$ref": "#/$defs/SiteNewsItem"
+          },
+          "type": "array"
+        },
+        "label": {
+          "type": "string"
+        },
+        "tab": {
+          "enum": [
+            "markets",
+            "ai",
+            "ai-finance",
+            "tech",
+            "biotech"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "tab",
+        "label",
+        "items"
+      ],
+      "title": "TopStories",
+      "type": "object"
+    },
+    "VolumePoint": {
+      "properties": {
+        "count": {
+          "type": "integer"
+        },
+        "date": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "date",
+        "count"
+      ],
+      "title": "VolumePoint",
+      "type": "object"
+    }
+  },
+  "title": "Newsroom site API"
+}

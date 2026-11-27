@@ -1,8 +1,10 @@
 UV = uv run --native-tls
 DATE ?= $(shell TZ=America/New_York date +%F)
 OUT ?= $(CURDIR)/out
+SITE_DAYS ?= $(shell python3 -c "from datetime import date, timedelta as t; print(*[(date.today() - t(n)).isoformat() for n in (3, 2, 1)])")
+SITE_WEEKS ?= $(shell python3 -c "from datetime import date, timedelta as t; print(*[(date.today() - t(weeks=n)).strftime('%G-W%V') for n in (1, 0)])")
 
-.PHONY: setup demo episode mcp-http render studio test contracts
+.PHONY: setup demo episode mcp-http api site-data render studio test contracts
 
 setup:
 	uv sync --native-tls --all-packages
@@ -25,6 +27,19 @@ episode:
 
 mcp-http:
 	$(UV) newsroom-mcp --transport http --host 127.0.0.1 --port 8765
+
+api:
+	$(UV) newsroom-api
+
+site-data:
+	for d in $(SITE_DAYS); do \
+		$(UV) newsroom-agents run --offline --llm mock --no-record --date $$d && \
+		$(UV) newsroom-voice build --tts silent --date $$d && \
+		$(UV) newsroom-publisher build --date $$d || exit 1; \
+	done
+	for w in $(SITE_WEEKS); do \
+		$(UV) newsroom-agents weekly --offline --llm mock --no-record --week $$w || exit 1; \
+	done
 
 render:
 	cd services/studio && npm run --silent render -- $(OUT)/$(DATE)

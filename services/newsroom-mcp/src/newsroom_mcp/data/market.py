@@ -105,6 +105,65 @@ def sample_snapshot(as_of: date | None = None) -> MarketSnapshot:
     )
 
 
+HISTORY_DAYS = {"1mo": 22, "6mo": 126, "1y": 252}
+
+
+def symbol_name(symbol: str) -> str:
+    names = {**INDICES, **WATCHLIST}
+    if symbol not in names:
+        raise ValueError(f"unknown symbol {symbol!r}")
+    return names[symbol]
+
+
+def fetch_yahoo_history(symbol: str, range_: str) -> list[PricePoint]:
+    with http_client() as client:
+        resp = client.get(YAHOO_CHART.format(symbol=symbol),
+                          params={"range": range_, "interval": "1d"})
+        resp.raise_for_status()
+    result = resp.json()["chart"]["result"][0]
+    closes = result["indicators"]["quote"][0]["close"]
+    points = [
+        PricePoint(date=datetime.fromtimestamp(ts, UTC).date().isoformat(), close=round(c, 2))
+        for ts, c in zip(result["timestamp"], closes, strict=False)
+        if c is not None
+    ]
+    if len(points) < 2:
+        raise ValueError(f"not enough history for {symbol}")
+    return points
+
+
+def sample_history(symbol: str, range_: str, as_of: date | None = None) -> list[PricePoint]:
+    as_of = as_of or date.today()
+    rng = random.Random(f"{symbol}-{range_}-{as_of.toordinal()}")
+    days, d = [], as_of
+    while len(days) < HISTORY_DAYS[range_]:
+        if d.weekday() < 5:
+            days.append(d)
+        d -= timedelta(days=1)
+    days.reverse()
+    price = _SAMPLE_BASE[symbol]
+    vol = 0.008 if symbol.startswith("^") else 0.022
+    drift = rng.uniform(-0.0005, 0.0015)
+    points = []
+    for i, day in enumerate(days):
+        price *= 1 + drift + rng.gauss(0, vol) + 0.002 * math.sin(i / 7)
+        points.append(PricePoint(date=day.isoformat(), close=round(price, 2)))
+    return points
+
+
+def get_history(symbol: str, range_: str, offline: bool) -> list[PricePoint]:
+    symbol_name(symbol)
+    if range_ not in HISTORY_DAYS:
+        raise ValueError(f"range must be one of {', '.join(HISTORY_DAYS)}")
+    if offline:
+        return sample_history(symbol, range_)
+    try:
+        return fetch_yahoo_history(symbol, range_)
+    except Exception as exc:  # noqa: BLE001
+        log.error("history for %s failed (%s); using sample data", symbol, exc)
+        return sample_history(symbol, range_)
+
+
 def get_snapshot(offline: bool) -> MarketSnapshot:
     if offline:
         return sample_snapshot()

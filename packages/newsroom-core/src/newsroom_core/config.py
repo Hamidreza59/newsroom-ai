@@ -43,6 +43,12 @@ WATCHLIST = {
     "RXRX": "Recursion",
 }
 
+SECTORS = {
+    "AI & Chips": ["NVDA", "AMD", "AVGO", "TSM"],
+    "Big Tech": ["MSFT", "AAPL", "GOOGL", "AMZN", "META", "TSLA", "ORCL", "PLTR"],
+    "Biotech": ["MRNA", "VRTX", "REGN", "RXRX"],
+}
+
 
 def load_dotenv(path: Path) -> None:
     if not path.exists():
@@ -101,6 +107,10 @@ class Settings:
     stories_per_show: int = field(default_factory=lambda: int(_env("STORIES_PER_SHOW", "5")))
     max_seconds: float = field(default_factory=lambda: float(_env("MAX_SECONDS", "235")))
     fps: int = 30
+
+    api_host: str = field(default_factory=lambda: _env("API_HOST", "127.0.0.1"))
+    api_port: int = field(default_factory=lambda: int(_env("API_PORT", "8000")))
+    web_origin: str = field(default_factory=lambda: _env("WEB_ORIGIN", "http://localhost:3000"))
 
     out_dir: Path = field(default_factory=lambda: Path(_env("OUT_DIR", str(ROOT / "out"))))
     data_dir: Path = field(default_factory=lambda: Path(_env("DATA_DIR", str(ROOT / "data"))))

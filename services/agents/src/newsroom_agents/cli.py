@@ -39,6 +39,18 @@ def cmd_run(args: argparse.Namespace) -> None:
     asyncio.run(produce_episode(settings, show_date, record=not args.no_record, approve=ask_approval))
 
 
+def cmd_weekly(args: argparse.Namespace) -> None:
+    from newsroom_agents.weekly import iso_week, produce_feature
+
+    settings = Settings()
+    if args.offline:
+        settings.offline = True
+    if args.llm:
+        settings.llm_provider = args.llm
+    week = args.week or iso_week(_today())
+    asyncio.run(produce_feature(settings, week, args.topic, record=not args.no_record))
+
+
 def ask_approval(payload: dict) -> bool:
     """Human-in-the-loop gate: shown only when guardrails had to rewrite on-air copy."""
     print(f"\nReview needed: {payload['reason']}\n  events: {payload['events']}\n"
@@ -79,6 +91,14 @@ def main() -> None:
     run.add_argument("--review", action="store_true",
                      help="pause for human approval when guardrails rewrite on-air copy")
     run.set_defaults(func=cmd_run)
+
+    weekly = sub.add_parser("weekly", help="write the weekly AI Innovation feature for the site")
+    weekly.add_argument("--week", help="ISO week YYYY-Www (default: this week, US/Eastern)")
+    weekly.add_argument("--topic", help="explainer key to use instead of the automatic pick")
+    weekly.add_argument("--offline", action="store_true", help="use sample market data and news")
+    weekly.add_argument("--llm", choices=["ollama", "openai", "mock"])
+    weekly.add_argument("--no-record", action="store_true", help="don't remember the topic")
+    weekly.set_defaults(func=cmd_weekly)
 
     sub.add_parser("tools", help="list the MCP server's tools").set_defaults(func=cmd_tools)
     sub.add_parser("graph", help="print the LangGraph orchestration as Mermaid").set_defaults(

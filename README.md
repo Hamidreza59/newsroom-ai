@@ -170,11 +170,15 @@ contracts: `package.json` (agents → voice) and `episode.json` (voice → studi
 | `voice` | TTS, timing, captions, lip-sync, deterministic time cap | `package.json` → `episode.json`, `narration.wav`, `captions.srt`, `youtube.json`, `short.json` | `newsroom-voice build` | Fargate task (needs the Kokoro models) |
 | `studio` | Remotion render of the episode | `episode.json` + audio → `video.mp4`, `short.mp4`, `thumbnail.png` | `npm run render -- <dir>` | Remotion Lambda or a Fargate task |
 | `publisher` | Website post and feed for the company site | `episode.json`, `youtube.json` → `web/post.json`, `web/post.md`, `out/web/index.json` | `newsroom-publisher build` | Lambda writing to S3 |
+| `api` | Website backend: markets, tagged news tabs, episodes and weekly features as JSON, plus episode media | MCP tools + `out/` → `/api/*` JSON, `/media/*` ([contract](services/api/README.md)) | `newsroom-api` | Lambda + API Gateway, or App Runner |
 
 Shared code lives in `packages/newsroom-core` (Pydantic models, settings, HTTP helpers), and each
 service ships its own Dockerfile (build context is the repo root).
 
 ### Contracts and no-drift types
+
+The website API's responses are defined the same way in `newsroom_core/site.py` and committed as
+`packages/contracts/site.schema.json`.
 
 `episode.json` is defined once, by the `Episode` Pydantic model in `newsroom-core`. The JSON Schema
 generated from it is committed as `packages/contracts/episode.schema.json`, and the studio's
@@ -199,6 +203,7 @@ Pydantic objects through the graph state. Run `uv run newsroom-agents graph` to 
 | **Hook Writer** | ⚡ fast | Writes the 5-second cold open from the top story and the biggest market move |
 | **Explainer** | 🧠 smart | Picks a concept tied to today's news from a curated knowledge base and explains it in about 30 seconds |
 | **Quiz Master** | ⚡ fast | Writes a multiple-choice question about today's news; reveals the last show's answer from memory |
+| **Feature Writer** | 🧠 smart | Weekly (`newsroom-agents weekly`): picks an unused topic from the knowledge base, ties it to the week's news, and writes the "AI Innovation" explainer article for the website, with grounding, language and PII checks and a deterministic fallback |
 | **Editor** | 🔧 rules | Numbers, grounding, attribution, advice and hype filters, PII redaction, on-screen limits |
 | **Packager** | 🔧 rules | Estimates runtime, trims to the time budget in priority order, writes `package.json` and `script.md` |
 | **Producer** (voice service) | 🔧 rules | Voices, stings, captions, lip-sync, measured 4-minute cap, chapters, the Short's clip plan, disclosures |
@@ -238,6 +243,8 @@ Claude Desktop or any other MCP client.
 |---|---|
 | `get_market_snapshot` | Index and watchlist closes with one-month history |
 | `get_ai_tech_news` | De-duplicated, ranked AI/tech stories from the last N hours |
+| `get_site_news` | All tagged stories (`ai`, `tech`, `biotech`, `markets`, `ai-finance`), including markets-only items, for the website |
+| `get_price_history` | Daily closes for an index or watchlist symbol over 1mo, 6mo or 1y |
 | `get_article_details` | Publisher name and official description from page metadata (grounding) |
 | `search_news_archive` | RAG lookup over stories covered on previous shows |
 | `search_style_guide` | RAG lookup over the newsroom style guide |
@@ -314,7 +321,9 @@ make demo       # offline: agents → voice (silent) → render → publisher, ~
 make episode    # today's real show: live data, Ollama, Kokoro, rendered video
 ```
 
-Other targets: `make mcp-http` (MCP server over HTTP on 8765), `make render`, `make studio`
+Other targets: `make mcp-http` (MCP server over HTTP on 8765), `make api` (website API on 8000),
+`make site-data` (offline sample episodes and weekly features for frontend development),
+`make render`, `make studio`
 (live preview), `make test` (pytest, ruff, studio typecheck) and `make contracts` (regenerate
 the schema and TypeScript types).
 
@@ -401,16 +410,17 @@ newsroom-ai/
 ├── pyproject.toml                 uv workspace root, pytest and ruff config
 ├── packages/
 │   ├── newsroom-core/             shared Pydantic models, settings, HTTP helpers
-│   └── contracts/                 episode.schema.json (generated from the models)
+│   └── contracts/                 episode.schema.json, site.schema.json (generated from the models)
 ├── services/
 │   ├── newsroom-mcp/              MCP server: market, news, article details, RAG, segment memory
 │   │   └── src/newsroom_mcp/      server.py · data/ (market, RSS + Hacker News) · rag/ (store, style guide, explainers)
 │   ├── agents/                    LangGraph newsroom → package.json + script.md
-│   │   └── src/newsroom_agents/   pipeline.py · estimate.py · guardrails.py · llm.py · observability.py · cli.py
-│   │       └── agents/            scout · analyst · scriptwriter · segments (hook, explainer, quiz) · editor
+│   │   └── src/newsroom_agents/   pipeline.py · weekly.py · estimate.py · guardrails.py · llm.py · observability.py · cli.py
+│   │       └── agents/            scout · analyst · scriptwriter · segments (hook, explainer, quiz) · feature · editor
 │   ├── voice/                     package.json → episode.json, narration, captions
 │   │   └── src/newsroom_voice/    producer.py · tts.py · sfx.py · speech.py · cli.py
 │   ├── publisher/                 episode → website post and feed
+│   ├── api/                       FastAPI website backend (MCP client + published content)
 │   └── studio/                    Remotion project (TypeScript/React)
 │       ├── src/DailyShow.tsx      main composition
 │       ├── src/ShortVideo.tsx     vertical YouTube Short

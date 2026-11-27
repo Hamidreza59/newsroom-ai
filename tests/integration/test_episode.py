@@ -40,7 +40,8 @@ async def test_mcp_server_tools_in_process(offline_settings):
     mcp_server.segments.cache_clear()
     async with Client(mcp_server.server) as client:
         names = {t.name for t in (await client.list_tools()).tools}
-        assert {"get_market_snapshot", "get_ai_tech_news", "search_news_archive",
+        assert {"get_market_snapshot", "get_ai_tech_news", "get_site_news", "get_price_history",
+                "search_news_archive",
                 "search_style_guide", "record_coverage", "get_article_details",
                 "search_explainers", "record_segment", "recent_segments"} <= names
         result = await client.call_tool("search_style_guide", {"query": "percent", "k": 1})

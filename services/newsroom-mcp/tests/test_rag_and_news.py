@@ -1,4 +1,15 @@
-from newsroom_mcp.data.news import categorize, merge_duplicates, sample_news, source_from_domain
+import pytest
+from newsroom_mcp.data.market import get_history
+from newsroom_mcp.data.news import (
+    categorize,
+    compute_tags,
+    get_news,
+    get_site_news,
+    is_video_item,
+    merge_duplicates,
+    sample_news,
+    source_from_domain,
+)
 from newsroom_mcp.rag.embedder import HashingEmbedder
 from newsroom_mcp.rag.store import VectorStore, chunk_markdown
 
@@ -50,3 +61,36 @@ def test_scout_balances_rundown_with_biotech():
     tech_only = [i for i in items if i.category != "Biotech"][:4]
     mixed = scout.ensure_mix(tech_only, items)
     assert any(i.category == "Biotech" for i in mixed) and len(mixed) == 4
+
+
+def test_compute_tags_multi_label():
+    assert compute_tags("Stocks rally as the Fed signals rate cuts") == ["markets"]
+    assert compute_tags("Bank deploys an AI assistant for fraud checks") == [
+        "ai", "markets", "ai-finance"]
+    assert "biotech" in compute_tags("FDA approves new gene therapy")
+    assert compute_tags("Local bakery wins award") == []
+    assert "markets" not in compute_tags("Parents fed up with the new app")
+
+
+def test_site_news_includes_markets_but_video_news_does_not():
+    site = get_site_news(True, 168)
+    tags = {t for i in site for t in i.tags}
+    assert {"ai", "tech", "biotech", "markets", "ai-finance"} <= tags
+    assert any(i.tags == ["markets"] for i in site)
+    video = get_news(True, 30)
+    assert [i.id for i in video] == [i.id for i in sample_news()] and all(is_video_item(i) for i in video)
+    assert len(get_site_news(True, 24)) < len(site)
+
+
+@pytest.mark.parametrize(("range_", "n"), [("1mo", 22), ("6mo", 126), ("1y", 252)])
+def test_sample_history_length_and_validation(range_, n):
+    points = get_history("NVDA", range_, True)
+    assert len(points) == n and points == get_history("NVDA", range_, True)
+    assert get_history("^GSPC", range_, True)[0].date < points[-1].date
+
+
+def test_history_rejects_unknown_symbol_and_range():
+    with pytest.raises(ValueError):
+        get_history("ZZZZ", "1mo", True)
+    with pytest.raises(ValueError):
+        get_history("NVDA", "5y", True)

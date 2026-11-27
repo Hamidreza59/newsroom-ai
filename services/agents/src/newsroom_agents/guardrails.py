@@ -135,6 +135,7 @@ TOOL_POLICY: dict[str, set[str]] = {
     "hook-writer": {"search_style_guide"},
     "explainer": {"search_explainers", "recent_segments", "search_style_guide"},
     "quiz-master": {"recent_segments"},
+    "feature-writer": {"search_explainers", "recent_segments", "get_site_news"},
     "orchestrator": {"get_market_snapshot", "record_coverage", "record_segment"},
 }
 

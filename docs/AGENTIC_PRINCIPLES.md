@@ -36,6 +36,7 @@ names the concrete mechanism that implements it and where to find it in the code
 | Hook Writer | **fast** | `search_style_guide` | headline + biggest mover |
 | Explainer | smart | `search_explainers`, `recent_segments`, `search_style_guide` | sentences from the vetted entry |
 | Quiz Master | **fast** | `recent_segments` | data-derived market quiz |
+| Feature Writer (weekly) | smart | `search_explainers`, `recent_segments`, `get_site_news` | article built from the vetted entry and related headlines |
 | Editor | rules | — | — |
 | Packager | rules | — | — |
 | Orchestrator | — | `get_market_snapshot`, `record_coverage`, `record_segment` | — |

@@ -14,10 +14,11 @@ from pathlib import Path
 import httpx
 from mcp.server.mcpserver import MCPServer
 from newsroom_core.config import Settings
-from newsroom_core.models import ArchiveHit, CoveredStory, MarketSnapshot, NewsItem
+from newsroom_core.models import ArchiveHit, CoveredStory, MarketSnapshot, NewsItem, PricePoint
 
-from newsroom_mcp.data.market import get_snapshot
+from newsroom_mcp.data.market import get_history, get_snapshot
 from newsroom_mcp.data.news import fetch_article_details, get_news
+from newsroom_mcp.data.news import get_site_news as get_site_news_items
 from newsroom_mcp.rag.embedder import make_embedder
 from newsroom_mcp.rag.store import SegmentLog, VectorStore, chunk_markdown
 
@@ -81,6 +82,18 @@ def get_market_snapshot() -> MarketSnapshot:
 def get_ai_tech_news(hours: int = 30, limit: int = 20) -> list[NewsItem]:
     """AI and technology stories from the last `hours`, de-duplicated and ranked by importance."""
     return get_news(settings().offline, hours)[:limit]
+
+
+@server.tool()
+def get_site_news(hours: int = 168, limit: int = 300) -> list[NewsItem]:
+    """All tagged stories (AI, tech, biotech, markets, AI-finance) for the website, best first."""
+    return get_site_news_items(settings().offline, hours)[:limit]
+
+
+@server.tool()
+def get_price_history(symbol: str, range: str = "6mo") -> list[PricePoint]:
+    """Daily closes for an index or watchlist symbol over `range` (1mo, 6mo or 1y)."""
+    return get_history(symbol, range, settings().offline)
 
 
 @server.tool()

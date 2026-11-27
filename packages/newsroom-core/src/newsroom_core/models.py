@@ -45,6 +45,7 @@ class NewsItem(BaseModel):
     summary: str = ""
     score: float = 0.0
     category: Category = "Tech"
+    tags: list[str] = Field(default_factory=list)
     coverage: int = 1
     follow_up: bool = False
     from_feed: bool = False

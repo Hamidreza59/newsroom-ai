@@ -1,0 +1,14 @@
+{
+  "name": "@newsroom/brand",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Design tokens, formatters and Logo shared by the web and studio apps",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "peerDependencies": {
+    "react": "19.1.10"
+  }
+}

@@ -10,6 +10,7 @@
     "gen:types": "json2ts --input ../../packages/contracts/episode.schema.json --output src/contract.ts --no-additionalProperties"
   },
   "dependencies": {
+    "@newsroom/brand": "*",
     "@remotion/cli": "4.0.541",
     "@remotion/google-fonts": "4.0.541",
     "react": "19.1.10",

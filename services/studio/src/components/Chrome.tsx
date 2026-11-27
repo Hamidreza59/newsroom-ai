@@ -1,5 +1,6 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { Logo as BrandLogo } from "@newsroom/brand";
 import { body, color, display, fmtDate, layout } from "../theme";
 
 export const Background: React.FC = () => {
@@ -30,29 +31,9 @@ export const Background: React.FC = () => {
   );
 };
 
-export const Logo: React.FC<{ size?: number; name: string }> = ({ size = 40, name }) => {
-  const [first, second] = name.includes("&") ? name.split("&").map((s) => s.trim()) : [name, ""];
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: size * 0.35 }}>
-      <svg width={size * 1.3} height={size * 1.3} viewBox="0 0 52 52">
-        <rect x="2" y="2" width="48" height="48" rx="14" fill={color.gold} />
-        <path d="M12 34 L20 24 L27 29 L38 15" stroke={color.bg0} strokeWidth="5" fill="none"
-              strokeLinecap="round" strokeLinejoin="round" />
-        <circle cx="38" cy="15" r="4" fill={color.bg0} />
-      </svg>
-      <div style={{ fontFamily: display, fontWeight: 700, fontSize: size, color: color.text,
-                    letterSpacing: size * 0.04, lineHeight: 1 }}>
-        {first.toUpperCase()}
-        {second && (
-          <>
-            <span style={{ color: color.gold }}> &amp; </span>
-            {second.toUpperCase()}
-          </>
-        )}
-      </div>
-    </div>
-  );
-};
+export const Logo: React.FC<{ size?: number; name: string }> = ({ size, name }) => (
+  <BrandLogo name={name} size={size} fontFamily={display} />
+);
 
 export const Header: React.FC<{ showName: string; date: string; label: string }> = ({
   showName,

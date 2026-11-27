@@ -4,11 +4,11 @@ OUT ?= $(CURDIR)/out
 SITE_DAYS ?= $(shell python3 -c "from datetime import date, timedelta as t; print(*[(date.today() - t(n)).isoformat() for n in (3, 2, 1)])")
 SITE_WEEKS ?= $(shell python3 -c "from datetime import date, timedelta as t; print(*[(date.today() - t(weeks=n)).strftime('%G-W%V') for n in (1, 0)])")
 
-.PHONY: setup demo episode mcp-http api site-data render studio test contracts
+.PHONY: setup demo episode mcp-http api site-data render studio web site test contracts
 
 setup:
 	uv sync --native-tls --all-packages
-	cd services/studio && npm install
+	npm install
 	$(UV) newsroom-voice setup
 	ollama pull qwen2.5:14b
 	ollama pull llama3.2
@@ -47,11 +47,22 @@ render:
 studio:
 	cd services/studio && npm run studio
 
+web:
+	npm run dev -w @newsroom/web
+
+site:
+	@echo "Run in two terminals:"
+	@echo "  make api    (NEWSROOM_OFFLINE=1 make api for sample data)"
+	@echo "  make web    (http://localhost:3000)"
+
 test:
 	$(UV) pytest -q
 	$(UV) ruff check packages services tests scripts
-	cd services/studio && npm run typecheck
+	npm run typecheck -w newsroom-studio
+	npm run typecheck -w @newsroom/web
+	npm run build -w @newsroom/web
 
 contracts:
 	$(UV) python scripts/gen_contracts.py
-	cd services/studio && npm run gen:types
+	npm run gen:types -w newsroom-studio
+	npm run gen:types -w @newsroom/web

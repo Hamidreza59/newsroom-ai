@@ -1,0 +1,9 @@
+{
+  "name": "newsroom-ai",
+  "private": true,
+  "workspaces": [
+    "packages/brand",
+    "services/studio",
+    "services/web"
+  ]
+}

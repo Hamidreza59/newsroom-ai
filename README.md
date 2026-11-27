@@ -37,6 +37,7 @@ Built as independently deployable microservices in one monorepo.
   - [Guardrails](#guardrails)
   - [Fact-checking and safety rails](#fact-checking-and-safety-rails)
   - [Video studio](#video-studio)
+  - [Website](#website)
 - [Quick start](#quick-start)
 - [Configuration](#configuration)
 - [Outputs](#outputs)
@@ -171,6 +172,7 @@ contracts: `package.json` (agents → voice) and `episode.json` (voice → studi
 | `studio` | Remotion render of the episode | `episode.json` + audio → `video.mp4`, `short.mp4`, `thumbnail.png` | `npm run render -- <dir>` | Remotion Lambda or a Fargate task |
 | `publisher` | Website post and feed for the company site | `episode.json`, `youtube.json` → `web/post.json`, `web/post.md`, `out/web/index.json` | `newsroom-publisher build` | Lambda writing to S3 |
 | `api` | Website backend: markets, tagged news tabs, episodes and weekly features as JSON, plus episode media | MCP tools + `out/` → `/api/*` JSON, `/media/*` ([contract](services/api/README.md)) | `newsroom-api` | Lambda + API Gateway, or App Runner |
+| `web` | Next.js website: home, markets with interactive charts, desks, AI Innovation features and episodes | `api` JSON + `/media/*` → pages | `make web` | S3 + CloudFront (static export) or Amplify / App Runner |
 
 Shared code lives in `packages/newsroom-core` (Pydantic models, settings, HTTP helpers), and each
 service ships its own Dockerfile (build context is the repo root).
@@ -305,6 +307,36 @@ React), so there are no stock assets and nothing to license.
   bumpers, a scrolling ticker and speaker-tagged lower thirds.
 - **Thumbnail:** a separate 1280×720 composition highlighting the day's biggest mover.
 
+### Website
+
+`services/web` is a Next.js (App Router, TypeScript, Tailwind CSS v4) site that reads the API. Price charts use
+TradingView's open-source `lightweight-charts`; bar and donut charts use `recharts`. Design tokens, formatters
+and the `Logo` live in `packages/brand` (`@newsroom/brand`) and are consumed as TypeScript source by both the
+website and the Remotion studio. Dark mode is the default, with a light toggle. The site name is set in
+`services/web/src/site.config.ts`.
+
+| Route | Content |
+|---|---|
+| `/` | Latest episode, market overview with sector heatmap, top stories by desk, weekly feature, recent episodes |
+| `/markets` | Index tiles, interactive price chart (1M/6M/1Y), sector heatmap, gainers and losers, sortable watchlist, news |
+| `/ai`, `/ai-finance`, `/tech`, `/biotech` | Desk page: KPIs, 7-day story volume, top sources, trending keywords, news (Biotech and AI in Finance add sector stocks) |
+| `/innovation`, `/innovation/[slug]` | Weekly AI features with table of contents, takeaways, glossary and sources |
+| `/episodes`, `/episodes/[date]` | Episode grid; player with seekable chapters, daily quiz, sources and script |
+
+```bash
+NEWSROOM_OFFLINE=1 make api   # terminal 1, http://127.0.0.1:8000
+make web                      # terminal 2, http://localhost:3000
+```
+
+`API_URL` (server-side) and `NEXT_PUBLIC_API_URL` (browser, media) default to `http://127.0.0.1:8000`. If the API is
+down, pages render a "data temporarily unavailable" state instead of failing.
+
+| Home | Markets |
+|---|---|
+| <img src="docs/images/web-home.jpg" alt="Website home page"/> | <img src="docs/images/web-markets.jpg" alt="Markets page with price chart and heatmap"/> |
+| **Biotech desk** | **Mobile** |
+| <img src="docs/images/web-biotech.jpg" alt="Biotech desk page"/> | <img src="docs/images/web-mobile.jpg" alt="Mobile home page" width="300"/> |
+
 ---
 
 ## Quick start
@@ -408,8 +440,10 @@ Each run writes to `out/<YYYY-MM-DD>/`:
 ```
 newsroom-ai/
 ├── pyproject.toml                 uv workspace root, pytest and ruff config
+├── package.json                   npm workspaces (brand, studio, web) with one package-lock.json
 ├── packages/
 │   ├── newsroom-core/             shared Pydantic models, settings, HTTP helpers
+│   ├── brand/                     @newsroom/brand: tokens, formatters, Logo (shared by web and studio)
 │   └── contracts/                 episode.schema.json, site.schema.json (generated from the models)
 ├── services/
 │   ├── newsroom-mcp/              MCP server: market, news, article details, RAG, segment memory
@@ -420,6 +454,7 @@ newsroom-ai/
 │   ├── voice/                     package.json → episode.json, narration, captions
 │   │   └── src/newsroom_voice/    producer.py · tts.py · sfx.py · speech.py · cli.py
 │   ├── publisher/                 episode → website post and feed
+│   ├── web/                       Next.js website (src/app routes, src/components, src/lib/contract.ts generated)
 │   ├── api/                       FastAPI website backend (MCP client + published content)
 │   └── studio/                    Remotion project (TypeScript/React)
 │       ├── src/DailyShow.tsx      main composition
@@ -430,7 +465,7 @@ newsroom-ai/
 │       └── src/components/        Newsroom set + camera, Presenter, wardrobe, AlertCard, charts, ticker
 ├── tests/                         integration (offline end to end) and contract tests
 ├── scripts/gen_contracts.py       regenerate the JSON Schema
-├── .github/workflows/             python.yml · studio.yml
+├── .github/workflows/             python.yml · studio.yml · web.yml
 ├── docs/AGENTIC_PRINCIPLES.md     principle → implementation map
 ├── docs/images/                   README screenshots
 ├── Makefile
@@ -450,7 +485,9 @@ make test
 
 This runs `pytest` (agents → voice → publisher offline end to end, the MCP server over stdio and
 HTTP, guardrails, routing, circuit breaker, quiz verification, the graph's shape and the contract
-check), `ruff`, and `tsc --noEmit` for the studio.
+check), `ruff`, `tsc --noEmit` for the studio and the website, and the website's production build.
+
+Other targets: `make web` (website dev server), `make site` (how to run API and web together), `make studio`.
 
 The offline path (`--offline --llm mock`, then `--tts silent`) needs no network or model, which keeps the
 tests fast and deterministic.

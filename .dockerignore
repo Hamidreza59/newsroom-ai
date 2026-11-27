@@ -8,3 +8,5 @@ data
 .ruff_cache
 .env
 services/studio/out
+**/.next
+services/web/.next

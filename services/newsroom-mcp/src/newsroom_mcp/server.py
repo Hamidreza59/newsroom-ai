@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import logging
 import os
+import re
 import sys
 import threading
 from datetime import date, timedelta
@@ -28,6 +29,7 @@ log = logging.getLogger("newsroom.mcp")
 
 STYLE_GUIDE = Path(__file__).parent / "rag" / "style_guide.md"
 EXPLAINERS = Path(__file__).parent / "rag" / "explainers.md"
+TRACK_LINE = re.compile(r"^Track:\s*(.+)$", re.MULTILINE)
 
 server = MCPServer(
     "newsroom",
@@ -56,8 +58,13 @@ def _store() -> VectorStore:
     entries = []
     for heading, text in chunk_markdown(EXPLAINERS.read_text()):
         key, _, title = (part.strip() for part in heading.partition("|"))
-        text = " ".join(text.split())
-        entries.append((key, "", f"{title}. {text}", {"key": key, "title": title, "text": text}))
+        if not key:
+            continue
+        track_line = TRACK_LINE.search(text)
+        tracks = [t.strip().lower() for t in track_line[1].split(",") if t.strip()] if track_line else []
+        text = " ".join(TRACK_LINE.sub("", text).split())
+        entries.append((key, "", f"{title}. {text}",
+                        {"key": key, "title": title, "text": text, "tracks": tracks}))
     vs.add("explainers", entries)
     return vs
 
@@ -138,10 +145,13 @@ def record_coverage(show_date: str, stories: list[CoveredStory]) -> int:
 
 
 @server.tool()
-def search_explainers(query: str, k: int = 3) -> list[dict]:
-    """Curated explainer entries (key, title, vetted text) most relevant to `query`."""
-    return [h.meta | {"similarity": round(h.similarity, 3)}
-            for h in store().search("explainers", query, k=k)]
+def search_explainers(query: str, k: int = 3, track: str | None = None) -> list[dict]:
+    """Curated explainer entries most relevant to `query`; `track` (ai/markets/bio/tech) filters."""
+    hits = store().search("explainers", query, k=k if not track else 1000)
+    out = [h.meta | {"similarity": round(h.similarity, 3)} for h in hits]
+    if track:
+        out = [e for e in out if track.lower() in e.get("tracks", [])]
+    return out[:k]
 
 
 @server.tool()

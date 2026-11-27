@@ -25,6 +25,7 @@ from newsroom_agents.guardrails import (
 
 GENERIC = {"what", "does", "work", "works", "how", "why", "company", "value", "data", "needs"}
 SENTENCE_START = re.compile(r"(^|[.!?:]\s+|\n)([A-Z])")
+TRACK = "ai"
 MIN_WORDS, MAX_WORDS = 450, 1100
 
 
@@ -101,13 +102,15 @@ class FeatureWriter(Agent):
 
     async def pick_topic(self, week: str, monday: date, override: str | None,
                          local_used: set[str], news: list[NewsItem]) -> dict:
-        entries = await self.tools.call(
-            "search_explainers", query="AI technology markets biotech", k=60)
+        entries = [e for e in await self.tools.call(
+            "search_explainers", query="AI technology markets biotech", k=60, track=TRACK)
+            if TRACK in e.get("tracks", [])]
         if override:
             match = next((e for e in entries if e["key"] == override), None)
             if not match:
                 raise ValueError(
-                    f"unknown topic {override!r}; choose from {', '.join(e['key'] for e in entries)}")
+                    f"topic {override!r} is not an AI topic; choose from "
+                    f"{', '.join(e['key'] for e in entries)}")
             return match
         recent = await self.tools.call(
             "recent_segments", kind="feature", before=monday.isoformat(), days=180)

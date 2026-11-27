@@ -94,3 +94,19 @@ def test_history_rejects_unknown_symbol_and_range():
         get_history("ZZZZ", "1mo", True)
     with pytest.raises(ValueError):
         get_history("NVDA", "5y", True)
+
+
+def test_search_explainers_track_filter(tmp_path, monkeypatch):
+    from newsroom_mcp import server
+
+    monkeypatch.setenv("NEWSROOM_OFFLINE", "1")
+    monkeypatch.setenv("DATA_DIR", str(tmp_path))
+    server.settings.cache_clear()
+    server._store.cache_clear()
+    ai = server.search_explainers("earnings reports", k=50, track="ai")
+    assert ai and all("ai" in e["tracks"] for e in ai)
+    assert "earnings" not in {e["key"] for e in ai} and len(ai) >= 18
+    allk = server.search_explainers("earnings reports", k=50)
+    assert "earnings" in {e["key"] for e in allk} and "Track:" not in allk[0]["text"]
+    server.settings.cache_clear()
+    server._store.cache_clear()

@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import date
 from pathlib import Path
 
@@ -17,9 +18,11 @@ from newsroom_mcp.rag.store import chunk_markdown
 EXPLAINERS = Path(newsroom_mcp.__file__).parent / "rag" / "explainers.md"
 KB = [
     {"key": k.partition("|")[0].strip(), "title": k.partition("|")[2].strip(),
-     "text": " ".join(t.split())}
-    for k, t in chunk_markdown(EXPLAINERS.read_text())
+     "text": " ".join(re.sub(r"^Track:.*$", "", t, flags=re.MULTILINE).split()),
+     "tracks": [x.strip() for x in re.search(r"^Track:\s*(.+)$", t, re.MULTILINE)[1].split(",")]}
+    for k, t in chunk_markdown(EXPLAINERS.read_text()) if k
 ]
+AI_KEYS = {e["key"] for e in KB if "ai" in e["tracks"]}
 
 
 class FakeTools:
@@ -28,7 +31,8 @@ class FakeTools:
 
     async def call(self, name, **kw):
         if name == "search_explainers":
-            return [e | {"similarity": 0.5} for e in KB]
+            track = kw.get("track")
+            return [e | {"similarity": 0.5} for e in KB if not track or track in e["tracks"]]
         if name == "get_site_news":
             return [i.model_dump() for i in sample_site_news()]
         if name == "recent_segments":
@@ -66,16 +70,27 @@ async def test_topic_rotation_skips_recent_and_local_topics():
     third = (await writer().run("2026-W48", date(2026, 11, 23), local_used={first, again})
              ).topic["key"]
     assert len({first, again, third}) == 3
+    assert {first, again, third} <= AI_KEYS
+
+
+async def test_rotation_only_picks_ai_topics():
+    used: set[str] = set()
+    for _ in range(len(AI_KEYS)):
+        key = (await writer().run("2026-W48", date(2026, 11, 23), local_used=used)).topic["key"]
+        assert key in AI_KEYS
+        used.add(key)
+    assert used == AI_KEYS
 
 
 async def test_explicit_topic_override_and_unknown_topic():
-    assert (await writer().run("2026-W48", date(2026, 11, 23), topic="crispr")).topic["key"] == "crispr"
-    with pytest.raises(ValueError, match="unknown topic"):
-        await writer().run("2026-W48", date(2026, 11, 23), topic="nope")
+    assert (await writer().run("2026-W48", date(2026, 11, 23), topic="rag")).topic["key"] == "rag"
+    for bad in ("nope", "earnings", "crispr"):
+        with pytest.raises(ValueError, match="not an AI topic"):
+            await writer().run("2026-W48", date(2026, 11, 23), topic=bad)
 
 
 def _long_draft(entry, extra=""):
-    body = " ".join([entry["text"].partition("Keywords:")[0]] * 4) + extra
+    body = " ".join([entry["text"].partition("Keywords:")[0]] * 2) + extra
     return FeatureDraft(
         title=entry["title"], dek="A plain explainer.",
         sections=[{"heading": f"Part {i}", "body": body} for i in range(4)],
@@ -84,14 +99,14 @@ def _long_draft(entry, extra=""):
 
 
 async def test_grounded_llm_draft_is_accepted_and_ungrounded_falls_back():
-    entry = next(e for e in KB if e["key"] == "crispr")
+    entry = next(e for e in KB if e["key"] == "rag")
     ok = await writer(ScriptedLlm([_long_draft(entry)])).run(
-        "2026-W48", date(2026, 11, 23), topic="crispr")
+        "2026-W48", date(2026, 11, 23), topic="rag")
     assert not ok.used_fallback
     bad_llm = ScriptedLlm([_long_draft(entry, " Zorblax Corp raised 4,242 widgets."),
                            _long_draft(entry, " Zorblax Corp raised 4,242 widgets.")])
     w = writer(bad_llm)
-    bad = await w.run("2026-W48", date(2026, 11, 23), topic="crispr")
+    bad = await w.run("2026-W48", date(2026, 11, 23), topic="rag")
     assert bad.used_fallback and "Zorblax" not in bad.draft.text()
     assert w.guard.counts()["output.feature_fallback"] == 1
 
